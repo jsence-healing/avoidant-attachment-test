@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>回避型依恋倾向自测 V2</title>
+  <style>
+    :root {
+      --ink: #1A1F2E;
+      --ink-2: #252B3B;
+      --mist: #F7F5F0;
+      --paper: #FFFCF7;
+      --gold: #C9A96E;
+      --gold-deep: #A8884D;
+      --taupe: #D4C9B8;
+      --text: #2C2C2C;
+      --ivory: #F2EDE3;
+      --muted: #8B8578;
+      --line: #E8E2D5;
+      --shadow: 0 24px 70px rgba(26, 31, 46, .15);
+      --sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.8;
+      letter-spacing: .05em;
+    }
+    button { font: inherit; letter-spacing: .05em; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.22; }
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+    }
+    .screen[hidden] { display: none !important; }
+    .screen.active { display: block; animation: rise .34s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .btn {
+      border: 0;
+      min-height: 52px;
+      padding: 0 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), #E2C78F);
+      color: #171A24;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 18px 36px rgba(201, 169, 110, .22);
+      transition: transform .2s ease, filter .2s ease, opacity .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.03); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .btn.ghost {
+      background: transparent;
+      color: var(--ivory);
+      border: 1px solid rgba(242, 237, 227, .24);
+      box-shadow: none;
+    }
+    .btn.light {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .intro {
+      position: relative;
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--ivory);
+    }
+    .intro-track {
+      height: 100dvh;
+    }
+    .intro-slide {
+      display: none;
+      width: 100%;
+      height: 100dvh;
+      padding: 38px clamp(22px, 6vw, 76px);
+      grid-template-columns: minmax(0, 1fr) minmax(290px, 520px);
+      align-items: center;
+      gap: 46px;
+      animation: rise .34s ease both;
+    }
+    .intro-slide > div:first-child {
+      position: relative;
+      z-index: 3;
+    }
+    .intro-slide.active { display: grid; }
+    .intro-slide.light { background: var(--mist); color: var(--text); }
+    .intro-slide.center-only {
+      grid-template-columns: minmax(0, 760px);
+      justify-content: center;
+      text-align: center;
+    }
+    .intro-slide.center-only p,
+    .intro-slide.center-only .gain-list {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .kicker { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 18px; }
+    .intro h1 { font-size: clamp(42px, 8vw, 78px); letter-spacing: .03em; }
+    .intro h2 { font-size: clamp(34px, 6vw, 56px); letter-spacing: .03em; }
+    .intro p { max-width: 650px; margin-top: 18px; color: rgba(242, 237, 227, .78); font-size: 17px; }
+    .intro-slide.light p { color: var(--muted); }
+    .intro-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; align-items: center; }
+    .intro-slide.light .intro-actions { margin-top: 22px; }
+    .dots {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      z-index: 5;
+      display: flex;
+      gap: 10px;
+    }
+    .dots button {
+      width: 9px;
+      height: 9px;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      background: rgba(242, 237, 227, .35);
+      cursor: pointer;
+    }
+    .dots button.active { background: var(--gold); width: 24px; border-radius: 999px; }
+    .beam-art, .report-preview, .source-card { position: relative; min-height: 500px; }
+    .beam-art { z-index: 1; }
+    .beam {
+      position: absolute;
+      inset: -20% 15% auto auto;
+      width: 190px;
+      height: 660px;
+      transform: rotate(24deg);
+      background: linear-gradient(180deg, rgba(201,169,110,.7), rgba(201,169,110,0));
+      filter: blur(4px);
+      animation: beam 5s ease-in-out infinite alternate;
+    }
+    @keyframes beam { to { transform: rotate(20deg) translateX(-18px); opacity: .76; } }
+    .relation-symbol {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+    .relation-symbol svg {
+      width: min(92%, 440px);
+      filter: drop-shadow(0 30px 80px rgba(201,169,110,.16));
+    }
+    .relation-symbol .orbit-a { animation: driftA 5.6s ease-in-out infinite; transform-origin: 155px 210px; }
+    .relation-symbol .orbit-b { animation: driftB 5.6s ease-in-out infinite; transform-origin: 285px 210px; }
+    @keyframes driftA { 50% { transform: translateX(14px) scale(1.02); } }
+    @keyframes driftB { 50% { transform: translateX(-14px) scale(1.02); } }
+    .horizon {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 54px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,169,110,.58), transparent);
+    }
+    .source-grid {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+      height: 100%;
+    }
+    .source-item {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(26,31,46,.06);
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .line-icon {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(201,169,110,.45);
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--gold-deep);
+    }
+    .line-icon svg {
+      width: 25px;
+      height: 25px;
+    }
+    .mini-report {
+      width: min(100%, 420px);
+      margin: 34px auto 0;
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(201,169,110,.32);
+      background: linear-gradient(180deg, rgba(242,237,227,.12), rgba(242,237,227,.04));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+    }
+    .mini-chart {
+      height: 160px;
+      display: grid;
+      place-items: center;
+    }
+    .gain-list { display: grid; gap: 13px; margin-top: 24px; }
+    .gain {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: rgba(242,237,227,.82);
+    }
+    .gain i {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--gold);
+      font-style: normal;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      width: min(860px, 100%);
+      margin: 18px auto 0;
+      text-align: left;
+    }
+    .mode-card {
+      position: relative;
+      min-height: 270px;
+      padding: 24px 26px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      border: 1px solid rgba(201,169,110,.22);
+      border-radius: 26px;
+      background: rgba(255,252,247,.96);
+      color: var(--text);
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 24px 70px rgba(0,0,0,.18);
+      transition: transform .2s ease, border .2s ease;
+    }
+    .mode-card:hover {
+      transform: translateY(-2px) scale(.995);
+      border-color: var(--gold);
+    }
+    .mode-icon {
+      width: 68px;
+      height: 68px;
+      margin-bottom: 16px;
+      color: var(--gold-deep);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .mode-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .mode-card h3 {
+      color: var(--text);
+      font-size: 38px;
+      margin: 0;
+      line-height: 1.16;
+      letter-spacing: .03em;
+    }
+    .mode-card p {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.68;
+      margin: auto 0 0;
+      width: 100%;
+      text-align: left;
+    }
+    .mode-head {
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      min-height: 132px;
+      flex: 0 0 auto;
+    }
+    .recommend {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 30;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(232,226,213,.8);
+    }
+    .progress span { display: block; height: 100%; width: 0; background: var(--gold); transition: width .4s ease; }
+    .quiz {
+      background: var(--mist);
+      height: 100dvh;
+      padding: 26px 18px;
+      display: grid;
+      place-items: center;
+    }
+    .question-card {
+      width: min(100%, 760px);
+      height: min(820px, calc(100dvh - 52px));
+      padding: clamp(24px, 5vw, 46px);
+      border-radius: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .q-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .geom {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 16px;
+      color: var(--gold-deep);
+      display: grid;
+      place-items: center;
+      overflow: visible;
+    }
+    .geom svg {
+      width: 46px;
+      height: 46px;
+      display: block;
+      overflow: visible;
+    }
+    .geom.empty { display: none; }
+    .q-title {
+      position: relative;
+      padding-left: 22px;
+      font-family: var(--serif);
+      font-size: clamp(23px, 4.8vw, 32px);
+      font-weight: 600;
+      line-height: 1.62;
+      color: var(--text);
+      letter-spacing: .05em;
+      margin-bottom: 24px;
+    }
+    .q-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      bottom: 9px;
+      width: 3px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+    .options { display: grid; gap: 12px; margin-top: 0; }
+    .option {
+      width: 100%;
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: transform .2s ease, border .2s ease, background .2s ease;
+    }
+    .option::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--taupe);
+      box-shadow: inset 0 0 0 5px #fff;
+    }
+    .option:hover, .option.selected {
+      border-color: var(--gold);
+      background: #FCF7ED;
+      transform: scale(.992);
+    }
+    .option.selected::before { background: var(--gold); border-color: var(--gold); }
+    .q-nav {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .q-nav button { min-height: 44px; }
+    .quiz-rights {
+      margin-top: auto;
+      padding: 12px 14px;
+      border: 1px solid rgba(201, 169, 110, .34);
+      border-radius: 10px;
+      background: rgba(201, 169, 110, .10);
+      color: #75613A;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.65;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .pause, .loader {
+      height: 100dvh;
+      background: radial-gradient(circle at 50% 42%, rgba(201,169,110,.2), transparent 30%), var(--ink);
+      color: var(--ivory);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .pause-card, .loader-card {
+      width: min(100%, 640px);
+      min-height: min(560px, calc(100dvh - 48px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transform: translateY(5dvh);
+    }
+    .breath-circle {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,169,110,.76);
+      background: rgba(201,169,110,.1);
+      animation: breatheCircle 4s ease-in-out infinite;
+    }
+    @keyframes breatheCircle { 50% { transform: scale(1.2); background: rgba(201,169,110,.18); } }
+    .pause h2, .loader h2 { color: var(--gold); font-size: clamp(32px, 7vw, 54px); margin-bottom: 8px; }
+    .pause p, .loader p { color: rgba(242,237,227,.78); font-size: 18px; }
+    .pause .btn { margin-top: 14px; }
+    .small-note { margin-top: 6px; color: rgba(242,237,227,.48); font-size: 13px; }
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(26,31,46,.68);
+      backdrop-filter: blur(12px);
+    }
+    .modal-mask.active { display: grid; }
+    .modal {
+      width: min(100%, 560px);
+      padding: 28px;
+      border-radius: 26px;
+      border: 1px solid rgba(201,169,110,.28);
+      background: var(--paper);
+      color: var(--text);
+      box-shadow: 0 28px 90px rgba(0,0,0,.3);
+    }
+    .modal h2 { color: var(--gold-deep); font-size: 30px; margin-bottom: 14px; }
+    .modal p { color: var(--muted); margin-top: 12px; }
+    .modal-actions { display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; }
+    .ring {
+      --p: 0;
+      width: 156px;
+      height: 156px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold) calc(var(--p) * 1%), rgba(242,237,227,.12) 0);
+      display: grid;
+      place-items: center;
+    }
+    .ring::before {
+      content: attr(data-value) "%";
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--gold);
+      font: 700 30px/1 var(--sans);
+    }
+    .load-lines { display: grid; gap: 10px; margin-top: 18px; color: rgba(242,237,227,.72); }
+    .load-lines span { opacity: .22; transition: opacity .3s ease; }
+    .load-lines span.on { opacity: 1; }
+
+    .report {
+      background: var(--ink);
+      color: var(--ivory);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .report-nav {
+      position: fixed;
+      z-index: 20;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      gap: 10px;
+    }
+    .report-nav button {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(242,237,227,.28);
+      display: block;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    .report-nav button.active { background: var(--gold); height: 24px; border-radius: 99px; }
+    .report-deck {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding-bottom: 44px;
+    }
+    .report-screen {
+      min-height: auto;
+      padding: clamp(30px, 6vw, 72px);
+      display: grid;
+      align-items: center;
+      border-bottom: 1px solid rgba(242,237,227,.08);
+      overflow: visible;
+    }
+    .report-hero {
+      min-height: 92dvh;
+      text-align: center;
+      place-items: center;
+    }
+    .report-hero .score-bar {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .metric-hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .metric-hero h2 {
+      margin: 0;
+      color: var(--gold);
+      font-size: clamp(34px, 6vw, 56px);
+    }
+    .metric-hero b {
+      display: block;
+      color: var(--gold);
+      font-size: clamp(58px, 11vw, 112px);
+      line-height: 1;
+      font-family: var(--serif);
+    }
+    .metric-hero span {
+      display: block;
+      margin-top: 8px;
+      color: var(--ivory);
+      font-size: 18px;
+    }
+    .metric-intro {
+      max-width: 760px;
+      margin: 12px auto 0;
+      color: rgba(242,237,227,.78);
+      font-size: 16px;
+      line-height: 1.9;
+      text-align: center;
+    }
+    .report-grid {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 480px);
+      gap: 48px;
+      align-items: center;
+    }
+    .report h2 { font-size: clamp(32px, 5.6vw, 60px); color: var(--gold); }
+    .report h3 { font-size: 28px; color: var(--gold); margin-bottom: 18px; }
+    .report p { color: rgba(242,237,227,.78); }
+    .profile-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .profile-tags span {
+      border: 1px solid rgba(201,169,110,.36);
+      color: rgba(242,237,227,.8);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .type-word {
+      margin: 18px 0 14px;
+      font-family: var(--serif);
+      font-size: clamp(50px, 10vw, 92px);
+      line-height: 1;
+      background: linear-gradient(135deg, #F4DBA5, var(--gold), #8D7241);
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: .04em;
+    }
+    .score-bar {
+      margin-top: 42px;
+      max-width: 520px;
+    }
+    .report-summary {
+      margin-top: 26px;
+      display: grid;
+      gap: 14px;
+      text-align: left;
+    }
+    .summary-card {
+      border: 1px solid rgba(201,169,110,.22);
+      border-radius: 22px;
+      padding: 18px 20px;
+      background: rgba(242,237,227,.05);
+    }
+    .summary-card b {
+      display: block;
+      color: var(--gold);
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .summary-card p {
+      color: rgba(242,237,227,.78);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+    .bar-track { height: 10px; border-radius: 999px; background: rgba(242,237,227,.12); overflow: hidden; margin-top: 12px; }
+    .bar-fill { height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), #E7CE97); transition: width 1s ease; }
+    .abstract-art, .tree-art {
+      min-height: 390px;
+      border-radius: 34px;
+      border: 1px solid rgba(201,169,110,.24);
+      background: linear-gradient(180deg, rgba(242,237,227,.08), rgba(242,237,227,.025));
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .radar-panel {
+      display: grid;
+      place-items: center;
+      min-height: 520px;
+    }
+    .metric-bars { display: grid; gap: 14px; margin-top: 20px; }
+    .metric {
+      border: 1px solid rgba(242,237,227,.1);
+      border-radius: 18px;
+      padding: 15px;
+      background: rgba(242,237,227,.04);
+    }
+    .metric-head { display: flex; justify-content: space-between; color: var(--ivory); margin-bottom: 8px; }
+    .metric small { display: block; color: rgba(242,237,227,.55); margin-top: 7px; letter-spacing: .03em; }
+    .essay {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 17px;
+    }
+    .essay p {
+      margin-top: 24px;
+      font-family: var(--serif);
+      line-height: 1.9;
+    }
+    .essay p:first-of-type::first-letter {
+      float: left;
+      font-size: 64px;
+      line-height: .9;
+      color: var(--gold);
+      padding-right: 9px;
+    }
+    .essay.other p:first-of-type::first-letter {
+      float: none;
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+      padding-right: 0;
+    }
+    .essay-lead {
+      font-family: var(--serif);
+      font-size: 64px;
+      line-height: .9;
+      color: var(--gold);
+      float: left;
+      padding-right: 9px;
+    }
+    .gold-line {
+      width: 80px;
+      height: 1px;
+      margin: 26px auto;
+      background: var(--gold);
+    }
+    .stage-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+      padding: 18px 2px 24px;
+    }
+    .stage-card {
+      min-height: 240px;
+      padding: 20px;
+      border-radius: 26px;
+      border: 1px solid rgba(201,169,110,.2);
+      background: linear-gradient(145deg, rgba(37,43,59,.96), rgba(26,31,46,.96));
+    }
+    .stage-card h3 { margin-bottom: 10px; }
+    .stage-card p { color: rgba(242,237,227,.84); line-height: 1.9; }
+    .stage-icon { color: var(--gold); margin-bottom: 18px; }
+    .letter-card {
+      color: var(--text);
+      background: var(--paper);
+      border-radius: 30px;
+      padding: clamp(24px, 5vw, 42px);
+      box-shadow: 0 24px 80px rgba(0,0,0,.24);
+      font-family: var(--serif);
+    }
+    .letter-card p { color: #4A463F; }
+    .signature { text-align: right; color: var(--gold-deep); margin-top: 20px; }
+    .advice { display: grid; gap: 14px; margin-top: 24px; }
+    .advice div {
+      border-left: 3px solid var(--gold);
+      padding: 12px 0 12px 16px;
+      color: rgba(242,237,227,.74);
+    }
+    .guide-preview {
+      margin-top: 22px;
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid rgba(201,169,110,.2);
+      background: linear-gradient(145deg, rgba(37,43,59,.92), rgba(26,31,46,.94));
+    }
+    .guide-preview h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+    .guide-detail {
+      display: none;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .guide-detail.active {
+      display: grid;
+    }
+    .guide-content {
+      display: none;
+    }
+    .guide-content.active {
+      display: block;
+    }
+    .guide-detail div {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(242,237,227,.05);
+      border: 1px solid rgba(201,169,110,.16);
+      color: rgba(242,237,227,.76);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .report-actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .fixed-save {
+      position: fixed;
+      z-index: 25;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: none;
+    }
+    .report.active .fixed-save { display: block; }
+    .report-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 26;
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid rgba(242,237,227,.14);
+      border-radius: 999px;
+      background: rgba(26,31,46,.84);
+      backdrop-filter: blur(14px);
+    }
+    .report.active .report-controls { display: none; }
+    .report-step {
+      min-width: 54px;
+      text-align: center;
+      color: rgba(242,237,227,.68);
+      font-size: 13px;
+    }
+    .report-controls .btn {
+      min-height: 42px;
+      padding: 0 16px;
+      box-shadow: none;
+    }
+    .notice {
+      margin-top: 26px;
+      color: rgba(242,237,227,.58);
+      font-size: 12px;
+      line-height: 1.7;
+      letter-spacing: .03em;
+    }
+
+    @media (max-width: 760px) {
+      .intro-slide, .report-grid { grid-template-columns: 1fr; }
+      .intro-slide { padding: 24px 18px 74px; align-content: center; gap: 16px; overflow: hidden; }
+      .intro h1 { font-size: 42px; }
+      .intro h2 { font-size: 34px; }
+      .intro p { font-size: 15px; line-height: 1.62; margin-top: 12px; }
+      .intro-actions { margin-top: 22px; }
+      .beam-art, .source-card, .report-preview { min-height: 280px; }
+      .source-card { min-height: auto; }
+      .source-grid { grid-template-columns: 1fr; gap: 8px; }
+      .source-item { padding: 12px 14px; border-radius: 14px; }
+      .source-item { grid-template-columns: 42px 1fr; }
+      .line-icon {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        border-radius: 15px;
+      }
+      .line-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+      .source-item p { margin-top: 4px; font-size: 13px; line-height: 1.45; }
+      .question-card { height: calc(100dvh - 72px); border-radius: 24px; }
+      .q-top { margin-bottom: 28px; }
+      .report-screen { padding: 34px 18px; }
+      .report-nav { display: none; }
+      .report-controls { display: none !important; }
+      .abstract-art, .tree-art, .radar-panel { min-height: 300px; }
+      .metric-hero b { font-size: 62px; }
+      .stage-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding-bottom: 0;
+      }
+      .stage-card {
+        min-height: auto;
+        padding: 14px 16px;
+        border-radius: 18px;
+      }
+      .stage-icon { display: none; }
+      .stage-card h3 { margin-bottom: 4px; font-size: 18px; }
+      .stage-card p { font-size: 13px; line-height: 1.55; }
+      .btn { width: 100%; }
+      .intro-actions .btn.ghost, .q-nav .btn { width: auto; }
+      .report-controls .btn { width: auto; }
+      .type-word { font-size: 48px; }
+      .letter-card { border-radius: 24px; }
+      .mode-grid { grid-template-columns: 1fr; gap: 12px; }
+      .mode-card { min-height: 210px; padding: 20px 18px 18px; }
+      .mode-icon { width: 52px; height: 52px; margin-bottom: 10px; }
+      .mode-card h3 { font-size: 30px; }
+      .mode-card p { font-size: 15px; margin-top: auto; }
+      .geom {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 14px;
+      }
+      .geom svg {
+        width: 48px;
+        height: 48px;
+      }
+      .modal-actions { flex-direction: column; }
+    }
+
+    @media (max-height: 760px) {
+      .source-card { display: none; }
+      .intro-slide.light { grid-template-columns: minmax(0, 720px); justify-content: center; }
+      .question-card { padding-top: 28px; padding-bottom: 24px; }
+      .q-top { margin-bottom: 18px; }
+      .q-title { font-size: 25px; margin-bottom: 18px; }
+      .option { min-height: 50px; }
+      .quiz-rights {
+        margin-top: auto;
+        padding: 9px 10px;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+      .pause-card, .loader-card { transform: none; }
+      .pause-card, .loader-card {
+        min-height: min(500px, calc(100dvh - 36px));
+        transform: translateY(4dvh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="quizProgress"><span></span></div>
+
+  <section class="screen intro active" id="introScreen">
+    <div class="intro-track" id="introTrack">
+      <div class="intro-slide">
+        <div>
+          <div class="kicker">01 · 关系里的靠近与退后</div>
+          <h1>靠近，还是逃离？</h1>
+          <p>你在亲密关系里的真实模式，往往不是你以为的那样。我们从“你如何靠近”和“你如何保护自己”开始。</p>
+          <div class="intro-actions">
+            <button class="btn" data-next-intro>继续</button>
+            <button class="btn ghost" id="skipIntroBtn" type="button" onclick="skipIntro()">跳过引导</button>
+          </div>
+        </div>
+        <div class="beam-art" aria-hidden="true">
+          <div class="beam"></div>
+          <div class="relation-symbol">
+            <svg viewBox="0 0 440 420">
+              <defs>
+                <linearGradient id="goldStroke" x1="0" x2="1">
+                  <stop offset="0" stop-color="#F4DBA5"/>
+                  <stop offset="1" stop-color="#A8884D"/>
+                </linearGradient>
+              </defs>
+              <circle class="orbit-a" cx="155" cy="210" r="74" fill="rgba(242,237,227,.09)" stroke="url(#goldStroke)" stroke-width="2"/>
+              <rect class="orbit-b" x="220" y="135" width="140" height="140" rx="32" fill="rgba(242,237,227,.06)" stroke="#F2EDE3" stroke-opacity=".55" stroke-width="1.5"/>
+              <path d="M64 320 C130 250 196 354 278 274 C316 238 346 246 382 286" fill="none" stroke="#C9A96E" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="220" cy="210" r="7" fill="#C9A96E"/>
+            </svg>
+          </div>
+          <div class="horizon"></div>
+        </div>
+      </div>
+      <div class="intro-slide light">
+        <div>
+          <div class="kicker">02 · 工具来源</div>
+          <h2>这份测评从哪里来？</h2>
+          <p>题目改编自 ECR-R 亲密关系量表、Bartholomew 四类依恋模型与 Bowlby 依恋理论框架。32 道题，5-7 分钟，覆盖依恋模式、关系特质与早期成长背景三个层面。</p>
+          <p>我们不做诊断，只帮你看见自己。</p>
+          <div class="intro-actions"><button class="btn" data-next-intro>继续</button><button class="btn light" data-prev-intro>返回</button></div>
+        </div>
+        <div class="source-card">
+          <div class="source-grid">
+            <div class="source-item"><div class="line-icon"><svg viewBox="0 0 48 48"><path d="M13 11h15a7 7 0 0 1 7 7v19H20a7 7 0 0 0-7 7V11Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 18h10M20 25h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div><h3>ECR-R</h3><p>亲密关系中的回避与焦虑维度。</p></div></div>
+            <div class="source-item"><div class="line-icon"><svg viewBox="0 0 48 48"><rect x="12" y="10" width="24" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 18h12M18 25h12M18 32h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div><h3>四类模型</h3><p>安全型、焦虑型、疏离型回避、恐惧型回避。</p></div></div>
+            <div class="source-item"><div class="line-icon"><svg viewBox="0 0 48 48"><path d="M24 38s-13-8-13-18a7 7 0 0 1 13-4 7 7 0 0 1 13 4c0 10-13 18-13 18Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 24h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div><h3>依恋框架</h3><p>把早期回应与成年关系模式放在一起理解。</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="intro-slide center-only">
+        <div>
+          <div class="kicker">03 · 选择测评视角</div>
+          <h2>这份测评，你想用来……</h2>
+          <div class="mode-grid">
+            <button class="mode-card" id="otherModeBtn">
+              <span class="recommend">推荐 ★</span>
+              <div class="mode-icon"><svg viewBox="0 0 64 64"><circle cx="24" cy="32" r="13" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="43" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="2" opacity=".62"/><path d="M33 32 H38" stroke="currentColor" stroke-width="2"/></svg></div>
+              <h3>看懂 TA</h3>
+              <p>判断身边的人是否有回避倾向，理解 TA 的行为信号，并找到更稳妥的相处方式。</p>
+            </button>
+            <button class="mode-card" id="selfModeBtn">
+              <div class="mode-icon"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 14v6M32 44v6M14 32h6M44 32h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <h3>了解我自己</h3>
+              <p>探索自己在亲密关系中的真实模式，看见靠近、退后和自我保护背后的原因。</p>
+            </button>
+          </div>
+          <p style="margin-top:18px;">两种模式题目不同，结果报告各有侧重。</p>
+          <div class="intro-actions" style="justify-content:center"><button class="btn ghost" data-prev-intro>返回</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="dots" id="introDots"></div>
+  </section>
+
+  <section class="screen quiz" id="quizScreen">
+    <article class="question-card">
+      <div class="q-top"><span id="sectionLabel"></span><span id="countLabel"></span></div>
+      <div class="geom" id="geomIcon"></div>
+      <div class="q-title" id="questionText"></div>
+      <div class="options" id="options"></div>
+      <div class="q-nav"><button class="btn light" id="prevBtn">← 上一题</button><button class="btn light" id="restartBtn">重来</button></div>
+      <div class="quiz-rights">
+        正版渠道仅限 小红书店铺「Jsence情绪治愈小屋」<br>
+        未经许可不得搬运、转售或商用；发现侵权将追究责任。
+      </div>
+    </article>
+  </section>
+
+  <section class="screen pause" id="pauseScreen">
+    <div class="pause-card">
+      <div class="breath-circle"></div>
+      <h2 id="pauseTitle">先停一下。</h2>
+      <p id="pauseText"></p>
+      <button class="btn" id="pauseBtn" disabled>准备好了 →</button>
+      <div class="small-note" id="pauseNote"></div>
+    </div>
+  </section>
+
+  <section class="screen loader" id="loaderScreen">
+    <div class="loader-card">
+      <div class="ring" id="ring" data-value="0"></div>
+      <h2>正在生成你的专属报告</h2>
+      <div class="load-lines">
+        <span>正在分析你的回避维度…</span>
+        <span>正在比对四类依恋模型…</span>
+        <span>正在生成你的专属报告…</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-mask" id="otherNoticeModal">
+    <article class="modal">
+      <h2>温馨提示</h2>
+      <p>本测评基于你的主观观察生成，结果仅反映你眼中的 TA，不代表 TA 真实的心理状态。</p>
+      <p>真正的依恋类型只能由本人在专业评估下确认。请将本报告作为理解关系的参考，而非给 TA 贴标签的依据。</p>
+      <div class="modal-actions">
+        <button class="btn light" id="cancelOtherBtn">返回</button>
+        <button class="btn" id="confirmOtherBtn">我已了解，开始测试</button>
+      </div>
+    </article>
+  </div>
+
+  <section class="screen report" id="reportScreen">
+    <nav class="report-nav" id="reportNav"></nav>
+    <div id="reportContent"></div>
+  </section>
+
+  <script>
+    const IMPORTANT_NOTICE = `本测试基于公开学术文献（Brennan, Clark & Shaver, 1998; Fraley, Waller & Brennan, 2000; Bartholomew & Horowitz, 1991）中的依恋研究量表改编，仅作为成年人自我探索与心理科普用途。测试结果不构成任何医学诊断、心理疾病评估或治疗建议。如您长期处于情绪困扰、关系痛苦或自我怀疑中，建议寻求精神科医师或国家认证的心理咨询师协助。您填写的所有信息仅用于本次结果生成，我们不会将您的答题数据用于其他用途。`;
+    const likert = ["非常不符合", "比较不符合", "不确定", "比较符合", "非常符合"];
+    const basicQuestions = [
+      { id: "gender", section: "开始前", text: "你的性别", options: ["女", "男", "不愿透露"] },
+      { id: "age", section: "开始前", text: "你的年龄段", options: ["18-22", "23-28", "29-35", "36-45", "46 及以上"] },
+      { id: "status", section: "开始前", text: "你目前的情感状态", options: ["单身", "暧昧中", "恋爱中", "已婚", "分手或离异挣扎中"] }
+    ];
+    const otherBasicQuestions = [
+      { id: "relation", section: "开始前", text: "你想测的这个人是", options: ["我的伴侣", "暧昧对象", "前任", "朋友", "家人", "其他"] },
+      { id: "taGender", section: "开始前", text: "TA 的性别", options: ["女", "男", "不清楚"] },
+      { id: "knownTime", section: "开始前", text: "你认识 TA 多久了", options: ["3 个月内", "半年", "1 年", "2-3 年", "3 年以上"] },
+      { id: "relationStatus", section: "开始前", text: "你们当前的关系状态", options: ["暧昧期", "恋爱中", "已分手", "婚姻中", "朋友关系", "其他"] }
+    ];
+    const moduleA = [
+      ["A1","我不太愿意让伴侣看到我内心最真实的情绪。","avoidance"],["A2","当伴侣想和我深入谈心时，我会感到不自在。","avoidance"],["A3","我习惯把心事自己消化，而不是告诉伴侣。","avoidance"],["A4","我倾向于和伴侣保持一定的情感距离。","avoidance"],["A5","在关系变得很亲密时，我会想要抽离一下。","avoidance"],["A6","我很难完全依赖伴侣。","avoidance"],["A7","我宁可一个人解决问题，也不愿向伴侣求助。","avoidance"],["A8","当伴侣表达对我的强烈情感需求时，我会想退后。","avoidance"],["A9","我能很自然地和伴侣分享我的脆弱面。","avoidance",true],["A10","我经常担心伴侣不像我爱他/她那样爱我。","anxiety"],["A11","当伴侣没有及时回复我时，我会忍不住胡思乱想。","anxiety"],["A12","我害怕伴侣会离开我。","anxiety"],["A13","我会反复确认伴侣是否还在乎我。","anxiety"],["A14","当感觉伴侣有点冷淡时，我会非常焦虑。","anxiety"],["A15","我很在意伴侣对我的评价。","anxiety"],["A16","我经常担心自己不够好，配不上伴侣。","anxiety"],["A17","哪怕是小小的争吵，我也会担心关系破裂。","anxiety"],["A18","我对伴侣的感情变化通常没什么察觉。","anxiety",true]
+    ].map(([id,text,dim,reverse]) => ({ id, text, dim, reverse, options: likert }));
+    const moduleB = [
+      "我担心如果让别人靠得太近，他们会发现我并不值得被爱。","在社交场合中，我倾向于观察而不是主动加入。","我害怕被别人评价或拒绝。","我经常觉得自己在关系里是“多余的那一个”。","当别人对我表达好感时，我第一反应是怀疑。","我会刻意避免参加可能让我感到尴尬的活动。","比起被人需要，我更希望自己不被注意。","我很难在新朋友面前自然地做自己。","我习惯用“我没事”来回应别人的关心。","我相信只要我足够独立，就不会受伤。"
+    ].map((text, i) => ({ id: `B${i + 1}`, text, options: likert }));
+    const moduleC = [
+      { id:"C1", text:"当我小时候难过哭泣时，照顾我的人通常会：", options:["安慰我，让我知道有人在","让我“自己冷静一下，不要哭了”","表现出不耐烦，甚至责备我","我不太记得了"] },
+      { id:"C2", text:"在我成长的家庭里，表达情绪是：", options:["被允许和接纳的","被认为是“软弱”或“麻烦”的","会引发争吵或冷战","几乎没有发生过"] },
+      { id:"C3", text:"小时候我对父母（或主要照顾者）的感觉更接近：", options:["安心、可依赖","既渴望靠近又害怕靠近","不如靠自己","距离很远，谈不上感觉"] },
+      { id:"C4", text:"我从小学到的应对难过的方式是：", options:["找人聊聊","自己扛过去","假装没事","转移注意力做别的事"] }
+    ];
+    const otherModuleA = [
+      ["A1","当我想和 TA 深入聊聊感受时，TA 会显得不自在或转移话题。","avoidance"],["A2","TA 很少主动告诉我 TA 真实的情绪。","avoidance"],["A3","TA 习惯说“我没事”“不用担心”来回避深入交流。","avoidance"],["A4","当关系变得越来越亲密时，TA 反而会拉开距离。","avoidance"],["A5","TA 不太愿意在我面前展现脆弱的一面。","avoidance"],["A6","TA 宁可自己解决问题，也不愿意向我求助或倾诉。","avoidance"],["A7","我能明显感觉到 TA 在情感上保留着一道墙。","avoidance"],["A8","当我表达对 TA 的强烈情感时，TA 会显得退缩或不知所措。","avoidance"],["A9","TA 会在关系中主动分享自己的内心世界。","avoidance",true],["A10","TA 对我的态度时冷时热，我经常摸不清 TA 真实的想法。","anxiety"],["A11","TA 有时长时间不回消息，但回来后又表现得若无其事。","anxiety"],["A12","我感觉 TA 心里有我，但行动上又总让我觉得不被重视。","anxiety"],["A13","TA 很少主动联系我，即使我们关系本应该更近。","anxiety"],["A14","当我们之间发生矛盾时，TA 倾向于冷处理或失联。","anxiety"],["A15","TA 似乎害怕做出明确的承诺。","anxiety"],["A16","TA 在亲密关系里好像随时准备“撤退”。","anxiety"],["A17","TA 表达爱意的方式很克制，让我经常需要猜测。","anxiety"],["A18","TA 会主动向我表达“想念你”“需要你”这类话。","anxiety",true]
+    ].map(([id,text,dim,reverse]) => ({ id, text, dim, reverse, options: likert }));
+    const otherModuleB = [
+      "TA 看起来很独立，甚至会强调“自己一个人也可以”。","TA 在社交中倾向于观察、保持距离，而不是主动融入。","TA 似乎对“被需要”这件事感到压力。","TA 很少向我提起 TA 的家庭、童年或过往关系。","TA 在感情中显得比同龄人“理性”或“清醒”得不像话。","当我对 TA 表达好感时，TA 看起来既高兴又不安。","TA 会主动避免可能让自己情感投入太深的情境。","TA 有时会突然消失或减少联系，过段时间又像没事一样回来。","我感觉 TA 渴望被爱，但同时又害怕被爱。","TA 会用“我这个人就是这样”来解释自己的疏离。"
+    ].map((text, i) => ({ id: `B${i + 1}`, text, options: likert }));
+    const otherModuleC = [
+      { id:"C1", text:"当 TA 心情不好的时候，TA 通常会：", options:["告诉我，让我陪 TA","自己一个人待着，不想被打扰","表面装作没事，但能感觉到 TA 在憋着","直接消失，不联系任何人"] },
+      { id:"C2", text:"当你们之间发生争执时，TA 的反应更接近：", options:["愿意当面把话说清楚","沉默、不回应、冷战","反过来指责你或转移话题","直接离开现场或断联"] },
+      { id:"C3", text:"关于 TA 的家庭，你了解到的是：", options:["家庭关系温暖，TA 经常提起","父母比较严厉或控制欲强","父母感情不好，或经历过重大变故","TA 几乎不谈家里的事"] },
+      { id:"C4", text:"TA 在你们关系中最常说的一句话更接近：", options:["“我爱你 / 我想你”","“我没事 / 不用担心我”","“你别想太多”","“我需要一个人待会儿”"] }
+    ];
+    const q32 = [...moduleA.slice(0,12).map(q=>({...q, section:"第一段 · 关系中的你"})), ...moduleA.slice(12).map(q=>({...q, section:"第二段 · 内心的声音"})), ...moduleB.slice(0,5).map(q=>({...q, section:"第二段 · 内心的声音"})), ...moduleB.slice(5).map(q=>({...q, section:"第三段 · 来时的路"})), ...moduleC.map(q=>({...q, section:"第三段 · 来时的路"}))];
+    const otherQ32 = [...otherModuleA.slice(0,12).map(q=>({...q, section:"第一段 · TA 的关系行为"})), ...otherModuleA.slice(12).map(q=>({...q, section:"第二段 · TA 的不一致信号"})), ...otherModuleB.slice(0,5).map(q=>({...q, section:"第二段 · TA 的关系特质"})), ...otherModuleB.slice(5).map(q=>({...q, section:"第三段 · 你们之间的关键情境"})), ...otherModuleC.map(q=>({...q, section:"第三段 · 你们之间的关键情境"}))];
+    const typeCopy = {
+      secure: ["安全型","你能在关系中自如地靠近与独立，是稳定的那种温柔。"],
+      preoccupied: ["焦虑型","你渴望靠近，又害怕被忽视，爱让你既甜蜜又煎熬。"],
+      dismissive: ["疏离型回避","你习惯独自前行，把“不需要”当作铠甲。"],
+      fearful: ["恐惧型回避","你既渴望被爱，又害怕被伤害，常在靠近与逃离之间摇摆。"]
+    };
+    const levelCopy = { low:"低回避倾向", mild:"轻度回避倾向", moderate:"中度回避倾向", significant:"显著回避倾向" };
+    let mode = "other", introIndex = 0, current = 0, answers = { basic:{}, responses:{} }, result = null, pauseNext = 0, reportIndex = 0;
+    const $ = id => document.getElementById(id);
+    function activeBasic() { return mode === "other" ? otherBasicQuestions : basicQuestions; }
+    function activeA() { return mode === "other" ? otherModuleA : moduleA; }
+    function activeB() { return mode === "other" ? otherModuleB : moduleB; }
+    function activeC() { return mode === "other" ? otherModuleC : moduleC; }
+    function activeQ32() { return mode === "other" ? otherQ32 : q32; }
+    function activeQuestions() { return [...activeBasic(), ...activeQ32()]; }
+    function startMode(nextMode) {
+      mode = nextMode;
+      current = 0;
+      answers = { basic:{}, responses:{} };
+      result = null;
+      renderQuestion();
+      show("quizScreen");
+    }
+    function backToModeSelect() {
+      current = 0;
+      answers = { basic:{}, responses:{} };
+      result = null;
+      reportIndex = 0;
+      show("introScreen");
+      setIntro(2);
+    }
+    function skipIntro() {
+      setIntro(2);
+    }
+    function toggleGuidePreview(button) {
+      const wrap = button.closest(".guide-preview");
+      const content = wrap.querySelector(".guide-content");
+      const detail = wrap.querySelector(".guide-detail");
+      const active = content.classList.toggle("active");
+      detail.classList.toggle("active", active);
+      button.textContent = active ? "收起后续指南" : "查看后续指南";
+    }
+    function lockPageScroll() {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+    function show(id) {
+      document.querySelectorAll(".screen").forEach(s => {
+        s.classList.remove("active");
+        s.hidden = true;
+      });
+      $(id).hidden = false;
+      $(id).classList.add("active");
+      $("quizProgress").style.display = id === "quizScreen" ? "block" : "none";
+      if (id === "reportScreen") $("reportScreen").scrollTop = 0;
+      else lockPageScroll();
+    }
+    function setIntro(i) {
+      introIndex = Math.max(0, Math.min(2, i));
+      document.querySelectorAll(".intro-slide").forEach((slide, idx) => {
+        slide.classList.toggle("active", idx === introIndex);
+        slide.hidden = idx !== introIndex;
+      });
+      [...$("introDots").children].forEach((dot, idx) => dot.classList.toggle("active", idx === introIndex));
+    }
+    function iconSvg(i) {
+      const icons = [
+        '<svg viewBox="0 0 48 48"><circle cx="18" cy="24" r="11" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="30" cy="24" r="11" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+        '<svg viewBox="0 0 48 48"><path d="M12 34 L24 12 L36 34 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="28" r="7" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+        '<svg viewBox="0 0 48 48"><rect x="12" y="12" width="24" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 30 C24 18 28 18 34 30" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+        '<svg viewBox="0 0 48 48"><path d="M10 24 H38 M24 10 V38" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="13" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+      ];
+      return icons[i % icons.length];
+    }
+    function radarSvg(items, size = 360) {
+      const c = size/2, r = size * .29, angles = [-90,0,90,180].map(d=>d*Math.PI/180);
+      const pts = (scale, useValue) => angles.map((a,i)=>{
+        const rr = r * (useValue ? items[i].value/100 : scale);
+        return `${c+Math.cos(a)*rr},${c+Math.sin(a)*rr}`;
+      }).join(" ");
+      const labels = items.map((it,i)=>`<text x="${c+Math.cos(angles[i])*(r+44)}" y="${c+Math.sin(angles[i])*(r+36)}" text-anchor="middle" dominant-baseline="middle" fill="#F2EDE3" font-size="13">${it.label}</text>`).join("");
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${[1,.66,.33].map(s=>`<polygon points="${pts(s,false)}" fill="none" stroke="rgba(242,237,227,.14)"/>`).join("")}${angles.map(a=>`<line x1="${c}" y1="${c}" x2="${c+Math.cos(a)*r}" y2="${c+Math.sin(a)*r}" stroke="rgba(242,237,227,.12)"/>`).join("")}<polygon points="${pts(1,true)}" fill="rgba(212,201,184,.30)" stroke="#C9A96E" stroke-width="2.5"/>${labels}</svg>`;
+    }
+    function renderQuestion() {
+      const list = activeQuestions(), basicCount = activeBasic().length;
+      const q = list[current], answered32 = Math.max(0, current - basicCount);
+      $("sectionLabel").textContent = q.section;
+      $("countLabel").textContent = current < basicCount ? `${current + 1}/${basicCount}` : `${answered32 + 1}/32`;
+      $("questionText").textContent = q.text;
+      $("geomIcon").innerHTML = current < basicCount ? "" : iconSvg(current);
+      $("geomIcon").classList.toggle("empty", current < basicCount);
+      $("options").innerHTML = "";
+      const saved = current < basicCount ? answers.basic[q.id] : answers.responses[q.id];
+      q.options.forEach((option, index) => {
+        const value = q.options === likert ? index + 1 : option;
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = q.options === likert ? option : option;
+        if (saved === value) btn.classList.add("selected");
+        btn.onclick = () => selectAnswer(q, value, btn);
+        $("options").appendChild(btn);
+      });
+      $("prevBtn").disabled = current === 0;
+      $("quizProgress").querySelector("span").style.width = `${answered32 <= 0 ? 2 : Math.min(100, answered32 / 32 * 100)}%`;
+    }
+    function selectAnswer(q, value, btn) {
+      const basicCount = activeBasic().length, list = activeQuestions();
+      if (current < basicCount) answers.basic[q.id] = value; else answers.responses[q.id] = value;
+      document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+      btn.classList.add("selected");
+      setTimeout(() => {
+        const answered32 = current - basicCount + 1;
+        if (answered32 === 12 || answered32 === 23) {
+          current++;
+          showPause(answered32);
+        } else if (current < list.length - 1) {
+          current++;
+          renderQuestion();
+        } else {
+          finish();
+        }
+      }, 300);
+    }
+    function showPause(done) {
+      pauseNext = current;
+      const first = done === 12;
+      $("pauseTitle").textContent = first ? "先停一下。" : "接下来的题，会触碰到一些回忆。";
+      if (mode === "other") {
+        $("pauseText").innerHTML = first ? "你已经完成了三分之一。<br>接下来的题会继续观察 TA 在关系里的行为信号。<br><br>不用替 TA 下结论，只需要回忆你真实看见的部分。" : "接下来的题，会涉及你们之间的关键情境。<br>如果有些答案并不确定，可以选择最接近的一项。<br><br>这份结果只代表你眼中的 TA。";
+      } else {
+        $("pauseText").innerHTML = first ? "你已经完成了三分之一。<br>这些问题没有标准答案，<br>你只需要诚实地面对自己。<br><br>深呼吸三次，再继续。" : "关于你小时候的家、你曾经爱过的人。<br>如果有些感觉浮上来，是正常的。<br><br>你可以慢慢答，不必急。";
+      }
+      $("pauseNote").textContent = `已完成 ${done}/32`;
+      $("pauseBtn").textContent = first ? "准备好了 →" : "继续 →";
+      $("pauseBtn").disabled = true;
+      show("pauseScreen");
+      setTimeout(() => $("pauseBtn").disabled = false, 1600);
+    }
+    function score(q) { const raw = Number(answers.responses[q.id] || 0); return q.reverse ? 6 - raw : raw; }
+    function norm(raw,min,span) { return Math.round((raw - min) / span * 100); }
+    function avg(ids) {
+      const pool = [...activeA(), ...activeB()];
+      return norm(ids.reduce((sum,id)=>sum+score(pool.find(q=>q.id===id)),0), ids.length, ids.length*4);
+    }
+    function calculate() {
+      const a = activeA(), b = activeB();
+      const avoidRaw = a.filter(q=>q.dim==="avoidance").reduce((s,q)=>s+score(q),0);
+      const anxRaw = a.filter(q=>q.dim==="anxiety").reduce((s,q)=>s+score(q),0);
+      const traitRaw = b.reduce((s,q)=>s+score(q),0);
+      const avoidanceScore = norm(avoidRaw,9,36), anxietyScore = norm(anxRaw,9,36), avoidTraitScore = norm(traitRaw,10,40);
+      const combinedAvoid = Math.round(avoidanceScore*.6 + avoidTraitScore*.4);
+      const attachmentType = avoidanceScore >= 50 ? (anxietyScore >= 50 ? "fearful" : "dismissive") : (anxietyScore >= 50 ? "preoccupied" : "secure");
+      const level = combinedAvoid >= 80 ? "significant" : combinedAvoid >= 60 ? "moderate" : combinedAvoid >= 40 ? "mild" : "low";
+      const radar = mode === "other"
+        ? [{label:"情感距离感",value:avoidanceScore},{label:"信号不一致度",value:anxietyScore},{label:"承诺回避度",value:avg(["A13","A15","A16","B3","B7"])},{label:"情绪表达封闭度",value:avg(["A2","A3","A5","A9","B10"])}]
+        : [{label:"亲密回避",value:avoidanceScore},{label:"关系焦虑",value:anxietyScore},{label:"情感压抑",value:avg(["A1","A3","A5","A9","B9"])},{label:"负性自我",value:avg(["B1","B3","B4","B5","B7"])}];
+      return { avoidanceScore, anxietyScore, avoidTraitScore, combinedAvoid, attachmentType, level, radar };
+    }
+    function finish() {
+      result = calculate();
+      show("loaderScreen");
+      let p = 0;
+      const lines = document.querySelectorAll(".load-lines span");
+      const timer = setInterval(() => {
+        p += 4;
+        $("ring").style.setProperty("--p", p);
+        $("ring").setAttribute("data-value", Math.min(100,p));
+        if (p > 22) lines[0].classList.add("on");
+        if (p > 54) lines[1].classList.add("on");
+        if (p > 82) lines[2].classList.add("on");
+        if (p >= 100) { clearInterval(timer); setTimeout(renderReport, 420); }
+      }, 90);
+    }
+    function percentile(score) { return Math.max(18, Math.min(92, Math.round(score*.72+16))); }
+    function childhood() {
+      const picked = ["C1","C2","C3","C4"].map(id => answers.responses[id] || "");
+      const count = picked.filter(t => !/安慰|允许|安心|找人聊聊/.test(t)).length;
+      if (mode === "other") {
+        if (count >= 3) return "你提供的观察里，TA 似乎更常用沉默、消失或回避谈论家庭的方式处理压力。这可能说明 TA 对情绪暴露比较谨慎，也可能只是你们之间还没有建立足够安全的表达空间。这里的成因只能作为一种推测，真正答案只有 TA 自己知道。";
+        if (count >= 1) return "你提到了一些 TA 面对压力时收回自己、转移话题或不愿展开的信号。这可能和 TA 过去的关系经验有关，也可能只是 TA 当前阶段的防御方式。理解这一点，是为了少一点自责，而不是替 TA 下结论。";
+        return "你观察到 TA 在关键情境里仍有一定沟通和回应能力。即便如此，TA 在亲密关系中的距离感仍可能让你困惑，需要结合长期行为而不是单次表现来判断。";
+      }
+      if (count >= 3) return "你的选择里有较多关于情绪被放回自己身体里处理的线索。你很可能较早学会：先收住、先忍住、先靠自己。这个策略曾经帮你维持秩序，但成年后也可能让别人很难靠近真实的你。";
+      if (count >= 1) return "你的成长经历里有一些情绪被压下或难以表达的片段。它们不决定你的一生，却可能解释为什么你在关系升温时，会本能地想确认风险。";
+      return "你的成长经历里似乎存在相对稳定的回应资源。即便如此，成年后的压力仍会影响亲密节奏，这些反应值得被温柔地看见。";
+    }
+    function strongestRadar(items) {
+      return [...items].sort((a, b) => b.value - a.value)[0];
+    }
+    function weakestRadar(items) {
+      return [...items].sort((a, b) => a.value - b.value)[0];
+    }
+    function reportHighlights() {
+      const high = strongestRadar(result.radar);
+      const low = weakestRadar(result.radar);
+      if (mode === "other") {
+        return [
+          ["你现在最该看的重点", `${high.label}是目前最突出的维度，分数 ${high.value}%。这说明你感受到的困扰，更多集中在“TA 怎么靠近、又怎么退开”这一层。先盯住这个维度去观察，比试图一次看懂 TA 的全部要有效。`],
+          ["这不代表什么", `${low.label}相对较低，说明它暂时不是最主要的冲突源。换句话说，不必把每一件事都解释成 TA 的全面性回避，你更需要区分：哪些是模式，哪些只是当下状态。`]
+        ];
+      }
+      return [
+        ["你现在最该看的重点", `${high.label}是目前最突出的维度，分数 ${high.value}%。这通常是你在关系里最容易自动启动的保护反应。比起给自己下定义，更重要的是先看见：这个反应通常在什么情境里被触发。`],
+        ["你已经拥有的资源", `${low.label}相对较低，说明这一面目前不是你的主要压力源。它也是你的可用资源，提醒你并不是所有亲密都危险，你已经有一部分能力可以支撑改变。`]
+      ];
+    }
+    function typeExplain() {
+      const map = mode === "other"
+        ? {
+            secure: "这不代表 TA 没有问题，而是 TA 整体更能稳定回应关系。TA 既能靠近，也比较能承接互动里的情绪和责任。",
+            preoccupied: "这不只是敏感，而是 TA 对关系确认有更高需求。TA 很在意连接，但也更容易因为不确定而释放不安信号。",
+            dismissive: "这不只是冷淡，更像是一种习惯性的自我保护。TA 倾向把需要藏起来，用独立和抽离来维持安全感。",
+            fearful: "这不只是矛盾，而是 TA 同时存在强烈的靠近需求和退开冲动。越重要的关系，越容易让 TA 摇摆。"
+          }
+        : {
+            secure: "这不代表你不会受伤，而是你整体更能稳定地进入关系。你能靠近，也能保留边界，问题出现时也更容易回到沟通。",
+            preoccupied: "这不只是爱得多，而是你对关系的不确定特别敏感。你会更快感受到对方的变化，也更需要清晰回应来帮助自己安稳。",
+            dismissive: "这不只是想独处，而是你更习惯先保护自己。你未必不在乎，只是当亲密升温时，身体会更快提醒你先往后退一步。",
+            fearful: "这不只是反复，而是你真的会同时想靠近又想逃开。你越在意一段关系，内心的警觉和拉扯就越明显。"
+          };
+      return map[result.attachmentType];
+    }
+    function typeAdvice() {
+      const map = mode === "other"
+        ? {
+            secure: "和 TA 相处时，重点不是“拯救”关系，而是继续看 TA 的稳定行动是否长期一致。",
+            preoccupied: "和 TA 相处时，重点是少猜、多确认，也要注意别让自己一直被 TA 的情绪波动牵着走。",
+            dismissive: "和 TA 相处时，重点不是追着问，而是观察 TA 是否愿意在有空间后重新靠近、重新承担。",
+            fearful: "和 TA 相处时，重点是边界和节奏。没有边界，只剩理解，最后最累的人通常是你。"
+          }
+        : {
+            secure: "你真正要做的不是修理自己，而是继续保持这种稳定感，把它带进更真实的关系互动里。",
+            preoccupied: "你真正要练的不是压住需要，而是把需要说得更具体、更稳定，而不是等对方猜。",
+            dismissive: "你真正要练的不是逼自己热情，而是学会在想退的时候，先说出一句真实感受，而不是直接关门。",
+            fearful: "你真正要练的不是立刻变得稳定，而是先学会在拉扯出现时停一下，辨认自己此刻最怕失去什么。"
+          };
+      return map[result.attachmentType];
+    }
+    function stages(type) {
+      return {
+        secure:[
+          "你通常能自然回应好感，也能保留自己的判断。重点不是赶快确定关系，而是边靠近边观察，这让你更少因为一时上头而失衡。",
+          "你愿意投入，也不会把全部安全感都压在对方身上。你比较能在亲密和自我之间保持弹性，所以爱里有温度，也有边界。",
+          "你更看重稳定沟通和共同节奏。对你来说，安全感不是高频证明，而是长期一致；这是你最值得继续保留的优势。",
+          "你倾向把问题摊开讲，而不是让沉默变重。真正的重点，是继续练习在不舒服刚出现时就开口，而不是等到情绪堆满。",
+          "你会难过，但通常能把告别和自我价值分开。你可以伤心，但不会轻易把一次离开理解成“我不值得被爱”。"
+        ],
+        preoccupied:[
+          "暧昧期你容易被细节牵动，回复速度和语气都会影响你的心情。重点不是逼自己不在意，而是先分清：什么是事实，什么是脑内推演。",
+          "热恋期你投入很深，也容易期待对方同等强度地回应。你很会爱人，但也容易过早把重心都给出去，所以节奏感特别重要。",
+          "稳定期若热度下降，你可能会把平静误读成疏远。你最需要练习的是把“现在比较平”与“他不爱我了”区分开。",
+          "冲突期你最需要清晰解释，而不是含糊或冷处理。真正有效的改进，不是追着要答案，而是把你的需要说得更具体、更可回应。",
+          "分开时你可能反复回想细节，需要给自己建立外部支持。重点不是立刻放下，而是别让失去变成对自我价值的审判。"
+        ],
+        dismissive:[
+          "暧昧期你会谨慎观察，喜欢留一点距离确认自己是否安全。你的重点不是强迫自己立刻热络，而是在想退时保留一点连接，不要直接消失。",
+          "热恋期亲密升温时，你可能突然想要更多个人空间。空间本身没问题，真正重要的是把空间说出来，而不是让对方只感受到冷下来。",
+          "稳定期你重视秩序和独立，不喜欢关系吞没生活。你最该练的是让伴侣看见：你不是不在乎，只是需要一种不窒息的靠近方式。",
+          "冲突期你容易先沉默或撤退，因为情绪表达会让你不自在。真正的改进，是把沉默缩短一点，哪怕只先说一句“我需要半小时整理一下”。",
+          "分手期你可能显得很理性，但感受未必真的已经结束。你要留意的重点是：别把没有表达过的情绪全部埋进“算了”里。"
+        ],
+        fearful:[
+          "暧昧期你既期待靠近，又会反复检查风险。你最需要的不是催自己果断，而是在想靠近和想逃开时，都先承认那是真实感受。",
+          "热恋期你可能在被爱时感到幸福，也在幸福里感到害怕。重点不是压住害怕，而是学会在害怕升起来时不立刻自我破坏。",
+          "稳定期平静会让你想留下，过度亲密又可能让你想逃开。你最该看的不是“我怎么又这样”，而是每次摇摆前发生了什么触发。",
+          "冲突期你的系统容易进入警觉，一边想解释，一边想切断。真正有帮助的改进，是先降温，再沟通，而不是在最炸的时候做决定。",
+          "分手期你可能在想念与自我保护之间来回摆动。重点不是逼自己不回头，而是把悲伤和危险区分开，避免反复回到伤害里。"
+        ]
+      }[type];
+    }
+    function otherOneLine(type) {
+      return {
+        secure: "TA 的亲密节奏相对稳定，能靠近，也能回应。",
+        preoccupied: "TA 渴望被确认，也容易在关系里释放不安信号。",
+        dismissive: "TA 不是不爱，TA 是习惯把需要藏起来。",
+        fearful: "TA 既渴望被爱，又害怕被爱，常在靠近与逃离之间摇摆。"
+      }[type];
+    }
+    function otherStrategies() {
+      return [
+        ["不要做这 3 件事", "不要频繁追问“你到底爱不爱我”；不要用情绪威胁或冷战逼 TA 表态；不要把 TA 的疏离自动理解成对你的否定。"],
+        ["试着这样做", "给 TA 留出空间，但保持稳定的存在感。用“我感受到……”代替“你为什么……”。当 TA 主动靠近时，温和回应，不要立刻加码。"],
+        ["如何沟通", "可以说：我不是要逼你马上回答，我只是想知道你的真实感受。也可以说：如果你需要时间，可以告诉我什么时候再聊。"],
+        ["警示信号", "如果 TA 长期贬低你、操纵你、用失联惩罚你，或让你持续怀疑自己的价值，请不要只想着理解 TA，要认真考虑退出关系。"],
+        ["保护好你自己", "理解 TA 之前，先确认你是否被尊重。你可以给空间，但不必无限等待；你可以温柔，但不能牺牲自己的底线。"]
+      ];
+    }
+    function reportMetricsSummary() {
+      const high = strongestRadar(result.radar);
+      const medium = [...result.radar].sort((a, b) => b.value - a.value)[1];
+      if (mode === "other") {
+        return `目前最值得优先观察的是 ${high.label}（${high.value}%），其次是 ${medium.label}（${medium.value}%）。如果你总觉得 TA “有时很近，有时又突然退开”，大概率不是你多想，而是这两个维度正在影响你们的相处体验。`;
+      }
+      return `目前最值得优先觉察的是 ${high.label}（${high.value}%），其次是 ${medium.label}（${medium.value}%）。这通常意味着，你在关系里最卡的地方并不是爱得不够，而是某种保护反应先于表达发生了。`;
+    }
+    function dimensionIntro() {
+      return mode === "other"
+        ? "这一页看的不是“TA 只有一个分数”，而是你观察到的四个维度。分数越高，说明这个维度在你们相处里越明显。"
+        : "这一页看的不是“你就是亲密回避 44 分”，而是你在四个不同维度上的分布。分数越高，说明这一类反应越常在关系里出现。";
+    }
+    function artSvg(type) {
+      const offset = {secure:0, preoccupied:16, dismissive:42, fearful:28}[type];
+      return `<svg viewBox="0 0 360 360" width="100%" height="100%"><circle cx="${136-offset/2}" cy="180" r="72" fill="rgba(242,237,227,.12)" stroke="#C9A96E" stroke-width="2"/><rect x="${174+offset}" y="112" width="112" height="112" rx="22" fill="rgba(242,237,227,.08)" stroke="#F2EDE3" stroke-width="1.5"/><path d="M82 260 C138 214 202 304 284 230" fill="none" stroke="#C9A96E" stroke-width="2"/><path d="M76 105 C132 76 210 88 282 128" fill="none" stroke="rgba(242,237,227,.38)" stroke-width="1"/></svg>`;
+    }
+    function treeSvg(mode, radar) {
+      const labels = mode === "other"
+        ? [
+            { x: 18, y: 42, w: 126, title: "情感距离感", value: radar[0].value, note: "更常拉开" },
+            { x: 230, y: 22, w: 118, title: "信号不一致度", value: radar[1].value, note: "忽近忽远" },
+            { x: 10, y: 266, w: 132, title: "承诺回避度", value: radar[2].value, note: "不想被定住" },
+            { x: 224, y: 172, w: 124, title: "表达封闭度", value: radar[3].value, note: "话说不透" }
+          ]
+        : [
+            { x: 18, y: 40, w: 126, title: "亲密回避", value: radar[0].value, note: "会往后退" },
+            { x: 224, y: 20, w: 124, title: "关系焦虑", value: radar[1].value, note: "会担心失去" },
+            { x: 8, y: 266, w: 138, title: "情感压抑", value: radar[2].value, note: "先收住感受" },
+            { x: 220, y: 168, w: 128, title: "负性自我", value: radar[3].value, note: "容易怪自己" }
+          ];
+      const boxes = labels.map((item, i) => {
+        const x = item.x, y = item.y, w = item.w, h = 58;
+        const tColor = i < 2 ? "#F3E9D7" : "#EFDDB5";
+        return `<g transform="translate(${x} ${y})">
+          <rect width="${w}" height="${h}" rx="14" fill="rgba(242,237,227,.07)" stroke="rgba(201,169,110,.28)"/>
+          <text x="14" y="23" fill="${tColor}" font-size="14" font-weight="700" font-family="var(--sans)">${item.title}</text>
+          <text x="14" y="43" fill="rgba(242,237,227,.92)" font-size="17" font-weight="800" font-family="var(--sans)">${item.value}%</text>
+          <text x="58" y="43" fill="rgba(242,237,227,.64)" font-size="11" font-weight="600" font-family="var(--sans)">${item.note}</text>
+        </g>`;
+      }).join("");
+      return `<svg viewBox="0 0 360 480" width="100%" height="100%" role="img" aria-label="${mode === "other" ? "TA 的四维关系树" : "你的四维关系树"}"><defs><linearGradient id="treeLeafGlow" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C9A96E" stop-opacity=".96"/><stop offset="100%" stop-color="#F3E0B1" stop-opacity=".92"/></linearGradient></defs><rect x="0" y="0" width="360" height="480" rx="32" fill="none"/><path d="M180 408 C164 330 168 250 183 160" fill="none" stroke="url(#treeLeafGlow)" stroke-width="5" stroke-linecap="round"/><path d="M180 330 C125 306 96 286 60 250 M181 312 C230 292 268 262 302 220 M176 244 C130 216 112 178 96 132 M184 224 C238 198 258 162 278 118" fill="none" stroke="url(#treeLeafGlow)" stroke-width="2" stroke-linecap="round"/><path d="M180 408 C142 430 112 434 72 426 M180 408 C214 432 248 438 292 426 M180 408 C170 444 146 458 118 464 M180 408 C188 444 214 458 244 464" fill="none" stroke="rgba(242,237,227,.5)" stroke-width="2" stroke-linecap="round"/><circle cx="96" cy="132" r="28" fill="rgba(242,237,227,.08)" stroke="#C9A96E"/><circle cx="278" cy="118" r="34" fill="rgba(242,237,227,.08)" stroke="#C9A96E"/><circle cx="60" cy="250" r="22" fill="rgba(242,237,227,.08)" stroke="#C9A96E"/><circle cx="302" cy="220" r="26" fill="rgba(242,237,227,.08)" stroke="#C9A96E"/>${boxes}<g transform="translate(98 444)"><rect width="164" height="28" rx="14" fill="rgba(242,237,227,.08)" stroke="rgba(201,169,110,.28)"/><text x="82" y="19" text-anchor="middle" fill="rgba(242,237,227,.76)" font-size="11" font-weight="700" font-family="var(--sans)">${mode === "other" ? "TA 的四维关系树" : "你的四维关系树"}</text></g></svg>`;
+    }
+    function renderReport() {
+      const [label, oneLine] = typeCopy[result.attachmentType];
+      const tags = mode === "other"
+        ? [answers.basic.relation, answers.basic.taGender, answers.basic.relationStatus].filter(Boolean).join(" · ")
+        : [answers.basic.gender, answers.basic.age, answers.basic.status].filter(Boolean).join(" · ");
+      const stageText = stages(result.attachmentType);
+      const reportTitle = mode === "other" ? `TA 是${label}` : label;
+      const reportLine = mode === "other" ? otherOneLine(result.attachmentType) : oneLine;
+      const highlights = reportHighlights();
+      const core = mode === "other"
+        ? `TA 从你的观察来看，更接近${label}，综合回避分处在${levelCopy[result.level]}区间。TA 的疏离未必等于不在乎，更可能是一套面对亲密压力时自动启动的保护方式。你可能经常困惑：为什么 TA 明明有靠近的瞬间，却又会突然冷下来、退回去或不愿把话说清楚。这个报告不能替 TA 下结论，但可以帮你把这些行为放进一个更清晰的关系模式里看。`
+        : `你目前更接近${label}，综合回避分处在${levelCopy[result.level]}区间。你在关系里的保护方式不是单一的冷淡或敏感，而是一套已经被反复练习过的靠近节奏。你可能会在安全时愿意表达，在压力升高时又想把需要收回去。关键不是给自己贴标签，而是看见：你什么时候想靠近，什么时候想退后，退后的背后又在保护什么。`;
+      reportIndex = 0;
+      $("reportContent").className = "report-deck";
+      $("reportContent").innerHTML = `
+        <section class="report-screen report-hero" id="r1"><div><div class="profile-tags" style="justify-content:center"><span>${tags}</span><span>${levelCopy[result.level]}</span></div><div class="type-word">${reportTitle}</div><p>${reportLine}</p><p style="margin-top:14px">${typeExplain()}</p><p style="margin-top:14px;color:rgba(242,237,227,.9)">${typeAdvice()}</p><p style="margin-top:10px;color:rgba(242,237,227,.52);font-size:13px">${mode === "other" ? "基于你提供的观察信息推断，仅供参考" : ""}</p><div class="score-bar"><p>${mode === "other" ? "TA 的回避倾向" : "综合回避分"}高于 ${percentile(result.combinedAvoid)}% 的参考用户</p><div class="bar-track"><div class="bar-fill" style="width:${percentile(result.combinedAvoid)}%"></div></div></div><div class="report-summary">${highlights.map(item=>`<article class="summary-card"><b>${item[0]}</b><p>${item[1]}</p></article>`).join("")}</div></div></section>
+        <section class="report-screen" id="r2"><div style="width:100%"><div class="metric-hero"><h2>${mode === "other" ? "TA 的四维分布" : "你的四维分布"}</h2><p class="metric-intro">${dimensionIntro()}</p></div><p style="max-width:760px;margin:0 auto 26px;text-align:center;color:rgba(242,237,227,.74)">${reportMetricsSummary()}</p><div class="radar-panel">${radarSvg(result.radar, 500)}</div><div class="metric-bars">${result.radar.map(m=>`<div class="metric"><div class="metric-head"><span>${m.label}</span><b>${m.value}%</b></div><div class="bar-track"><div class="bar-fill" style="width:${m.value}%"></div></div><small>${m.value>=70?`${m.label}这一维度很突出，通常会在关键关系里反复出现，建议优先看它怎么影响你的沟通和边界。`:m.value>=45?`${m.label}有一定存在感，平时可能不明显，但在压力、失望或不确定感上来时会冒出来。`:`${m.label}相对温和，目前不是最主要的压力源，可以把它当成你已有的稳定资源。`}</small></div>`).join("")}</div></div></section>
+        <section class="report-screen" id="r3"><div class="essay ${mode === "other" ? "other" : ""}"><h2>${mode === "other" ? "解读 TA" : "关于你"}</h2><p>${mode === "other" ? `<span class="essay-lead">TA</span>从你的观察来看，更接近${label}，综合回避分处在${levelCopy[result.level]}区间。TA 的疏离未必等于不在乎，更可能是一套面对亲密压力时自动启动的保护方式。你可能经常困惑：为什么 TA 明明有靠近的瞬间，却又会突然冷下来、退回去或不愿把话说清楚。这个报告不能替 TA 下结论，但可以帮你把这些行为放进一个更清晰的关系模式里看。` : core}</p><div class="gold-line"></div><p>${mode === "other" ? "<span style='color:var(--gold)'>TA 的回避不一定是针对你。</span>很多时候，越靠近越想撤退，是因为亲密本身会让 TA 感到失控。你能做的是看见模式，而不是把所有责任都揽到自己身上。" : "<span style='color:var(--gold)'>你的回避并不一定来自冷漠。</span>很多时候，它来自太在意之后形成的谨慎：在真正交出自己之前，你需要确认对方是否稳定、是否接得住你的需要。"}</p><div class="gold-line"></div><p>${mode === "other" ? "理解 TA，不等于替 TA 合理化所有伤害。相处策略的前提，是你也被尊重、被回应、被认真对待。" : "当你愿意把“我怎么了”改成“我正在保护什么”，很多关系里的反应都会变得更容易理解。"}</p></div></section>
+        <section class="report-screen" id="r4"><div class="report-grid"><div class="tree-art">${treeSvg(mode, result.radar)}</div><div><h2>${mode === "other" ? "TA 为什么会这样" : "你是怎么走到这里的"}</h2><p>${mode === "other" ? "这棵树不是装饰，它把你眼里的 TA 画成四个维度：你能看见的，是枝叶和走向。" : "这棵树不是装饰，它把你在关系里的四个维度长成枝叶：枝叶是反应，根系是保护。"}</p><p style="margin-top:18px">${childhood()}</p><p style="margin-top:18px">${mode === "other" ? "请注意，这里只是一种基于观察的温和推测，不代表 TA 真实的成长经历。理解这一点，是为了减少误解，而不是给 TA 贴标签。" : "依恋理论提醒我们，早期回应会影响一个人理解亲密的方式。成年后的你仍然可以通过更稳定的关系经验、更具体的表达练习，慢慢更新这套旧规则。"}</p></div></div></section>
+        <section class="report-screen" id="r5"><div style="width:min(1120px,100%);margin:0 auto"><h2>${mode === "other" ? "与 TA 相处的关键策略" : "你在关系里的样子"}</h2><div class="stage-row">${mode === "other" ? otherStrategies().map((card,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${card[0]}</h3><p>${card[1]}</p></article>`).join("") : ["暧昧期","热恋期","稳定期","冲突期","分手期"].map((name,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${name}</h3><p>${stageText[i]}</p></article>`).join("")}</div></div></section>
+        <section class="report-screen" id="r6"><div class="report-grid"><div class="letter-card"><h3>${mode === "other" ? "给你的话" : "给重要他人的一封信"}</h3><p>${mode === "other" ? "在你想理解 TA 之前，请先记住：你不是 TA 的治疗师，也不需要负责改变 TA。改变一个成年人是很困难的事，你能做的是看清 TA 是谁，看清自己想要什么，然后决定要不要继续、怎么继续。" : result.attachmentType==="dismissive"?"我的安静不是冷漠，我的距离也不一定是不在意。很多时候，我只是还不熟悉怎样安全地表达需要。请给我一点节奏，也请在靠近我时保持清晰和温柔。":result.attachmentType==="fearful"?"我可能一边期待你靠近，一边又在靠近发生时紧张。那不是你做错了，也不是我不珍惜你。稳定的陪伴、明确的边界和不急着逼我表态，会让我更容易留下来。":result.attachmentType==="preoccupied"?"我的反复确认并不是想控制你，而是有时我会很快掉进不安里。清晰、稳定的回应会让我慢慢放松。":"我珍惜亲密，也珍惜彼此作为独立个体的空间。我们不必用猜测来证明爱，稳定、回应和尊重本身就足够珍贵。"}</p><div class="signature">—— ${mode === "other" ? "先保护好你自己" : "你的另一半"}</div></div><div><h2>下一步</h2><div class="advice">${mode === "other" ? "<div>觉察：记录 TA 的行为模式 1 周，看行动是否稳定，而不是只看一句话。</div><div>沟通：用“我感受到……”代替“你为什么……”，尝试一次清晰而不逼迫的对话。</div><div>底线：写下 3 条自己绝不接受的行为。若出现长期贬低、情感操纵、冷暴力或安全风险，请优先考虑离开。</div>" : "<div>觉察：下次想说“我没事”之前，先停 3 秒，问自己真正的感受是什么。</div><div>行动：每周选择一次低风险表达，只说一个具体需要。</div><div>帮助：若长期感到关系困扰、情绪低落超过两周，或出现自我伤害念头，请及时联系国家心理援助热线 12356，或寻找当地注册心理咨询师。</div>"}</div><div class="guide-preview"><div class="guide-content"><h3>后续指南</h3><div class="guide-detail">${mode === "other" ? "<div>我们会用另一种方式提供，重点会放在识别真假靠近、沟通节奏、边界与底线、关系预警信号，以及你怎么更好地保护自己等方向。如果你对这部分有需要，可以联系店铺获取后续内容。</div>" : "<div>我们会用另一种方式提供，重点会放在情绪识别、低风险表达、建立安全感、冲突中的稳定处理，以及关系里的长期练习等方向。如果你对这部分有需要，可以联系店铺获取后续内容。</div>"}</div></div><div class="report-actions"><button class="btn" type="button" onclick="toggleGuidePreview(this)">查看后续指南</button><button class="btn ghost" type="button" onclick="backToModeSelect()">重新评估</button></div></div><div class="notice"><strong>重要说明</strong><br>${IMPORTANT_NOTICE}</div></div></div></section>`;
+      $("reportNav").innerHTML = "";
+      show("reportScreen");
+    }
+    function restart() { current = 0; answers = { basic:{}, responses:{} }; result = null; reportIndex = 0; show("introScreen"); setIntro(0); }
+    [0,1,2].forEach(i => { const b = document.createElement("button"); b.onclick = () => setIntro(i); $("introDots").appendChild(b); });
+    document.querySelectorAll(".screen").forEach(s => {
+      if (!s.classList.contains("active")) s.hidden = true;
+    });
+    window.addEventListener("wheel", event => {
+      if (!$("reportScreen").classList.contains("active")) event.preventDefault();
+    }, { passive: false });
+    window.addEventListener("touchmove", event => {
+      if (!$("reportScreen").classList.contains("active")) event.preventDefault();
+    }, { passive: false });
+    setIntro(0);
+    document.querySelectorAll("[data-next-intro]").forEach(b => b.onclick = () => setIntro(introIndex + 1));
+    document.querySelectorAll("[data-prev-intro]").forEach(b => b.onclick = () => setIntro(introIndex - 1));
+    $("skipIntroBtn").onclick = skipIntro;
+    $("otherModeBtn").onclick = () => $("otherNoticeModal").classList.add("active");
+    $("selfModeBtn").onclick = () => startMode("self");
+    $("cancelOtherBtn").onclick = () => $("otherNoticeModal").classList.remove("active");
+    $("confirmOtherBtn").onclick = () => {
+      $("otherNoticeModal").classList.remove("active");
+      startMode("other");
+    };
+    $("prevBtn").onclick = () => { if (current > 0) current--; renderQuestion(); };
+    $("restartBtn").onclick = restart;
+    $("pauseBtn").onclick = () => { current = pauseNext; renderQuestion(); show("quizScreen"); };
+  </script>
+</body>
+</html>
