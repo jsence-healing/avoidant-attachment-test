@@ -443,7 +443,7 @@
     .q-nav button { min-height: 44px; }
     .quiz-rights {
       width: min(100%, 760px);
-      margin-top: auto;
+      margin-top: 24px;
       padding: 12px 14px;
       border: 1px solid rgba(201, 169, 110, .34);
       border-radius: 10px;
@@ -846,12 +846,7 @@
       font-size: 22px;
     }
     .guide-detail {
-      display: none;
-      gap: 10px;
       margin-top: 16px;
-    }
-    .guide-detail.active {
-      display: grid;
     }
     .guide-content {
       display: none;
@@ -920,6 +915,13 @@
     @media (max-width: 760px) {
       .intro-slide, .report-grid { grid-template-columns: 1fr; }
       .intro-slide { padding: 24px 18px 74px; align-content: center; gap: 16px; overflow: hidden; }
+      .intro-slide.center-only {
+        align-content: start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-top: 28px;
+        padding-bottom: 84px;
+      }
       .intro h1 { font-size: 42px; }
       .intro h2 { font-size: 34px; }
       .intro p { font-size: 15px; line-height: 1.62; margin-top: 12px; }
@@ -988,7 +990,7 @@
         min-width: 0;
       }
       .quiz-rights {
-        margin-top: 14px;
+        margin-top: 24px;
         padding: 10px 12px;
         font-size: 11px;
         line-height: 1.55;
@@ -997,7 +999,18 @@
       .report-nav { display: none; }
       .report-controls { display: none !important; }
       .abstract-art, .tree-art, .radar-panel { min-height: 300px; }
+      .radar-panel {
+        min-height: auto;
+        overflow-x: hidden;
+      }
       .metric-hero b { font-size: 62px; }
+      .metric-head {
+        gap: 10px;
+        align-items: baseline;
+      }
+      .metric-head span {
+        min-width: 0;
+      }
       .stage-row {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -1259,10 +1272,9 @@
     function toggleGuidePreview(button) {
       const wrap = button.closest(".guide-preview");
       const content = wrap.querySelector(".guide-content");
-      const detail = wrap.querySelector(".guide-detail");
       const active = content.classList.toggle("active");
-      detail.classList.toggle("active", active);
       button.textContent = active ? "收起后续指南" : "查看后续指南";
+      button.setAttribute("aria-expanded", active ? "true" : "false");
     }
     function lockPageScroll() {
       document.documentElement.scrollTop = 0;
@@ -1596,6 +1608,8 @@
       const reportTitle = mode === "other" ? `TA 是${label}` : label;
       const reportLine = mode === "other" ? otherOneLine(result.attachmentType) : oneLine;
       const highlights = reportHighlights();
+      const isMobile = window.innerWidth <= 760;
+      const radarSize = isMobile ? Math.min(window.innerWidth - 56, 320) : 500;
       const core = mode === "other"
         ? `TA 从你的观察来看，更接近${label}，综合回避分处在${levelCopy[result.level]}区间。TA 的疏离未必等于不在乎，更可能是一套面对亲密压力时自动启动的保护方式。你可能经常困惑：为什么 TA 明明有靠近的瞬间，却又会突然冷下来、退回去或不愿把话说清楚。这个报告不能替 TA 下结论，但可以帮你把这些行为放进一个更清晰的关系模式里看。`
         : `你目前更接近${label}，综合回避分处在${levelCopy[result.level]}区间。你在关系里的保护方式不是单一的冷淡或敏感，而是一套已经被反复练习过的靠近节奏。你可能会在安全时愿意表达，在压力升高时又想把需要收回去。关键不是给自己贴标签，而是看见：你什么时候想靠近，什么时候想退后，退后的背后又在保护什么。`;
@@ -1603,7 +1617,7 @@
       $("reportContent").className = "report-deck";
       $("reportContent").innerHTML = `
         <section class="report-screen report-hero" id="r1"><div class="hero-card"><div class="profile-tags" style="justify-content:center"><span>${tags}</span><span>${levelCopy[result.level]}</span></div><div class="hero-type"><div class="type-icon" aria-hidden="true">${typeIconSvg(result.attachmentType)}</div><div class="result-badge">${avoidantResultLine()}</div><div class="type-word">${reportTitle}</div><p class="type-caption">${reportLine}</p></div><div class="result-meta"><div><b>先看结论</b>${avoidantResultLine()}，这是这份工具最核心的判断。</div><div><b>再看类型</b>${typeExplainShort(reportTitle)}，它是在解释这种回避更像哪一种关系模式。</div><div><b>最后看程度</b>${levelCopy[result.level]}，说的是这种回避倾向目前有多明显。</div></div><p style="margin-top:14px">${typeAdvice()}</p><p style="margin-top:10px;color:rgba(242,237,227,.52);font-size:13px">${mode === "other" ? "基于你提供的观察信息推断，仅供参考" : ""}</p><div class="score-bar"><p>${mode === "other" ? "TA 的回避倾向" : "综合回避分"}高于 ${percentile(result.combinedAvoid)}% 的参考用户</p><div class="bar-track"><div class="bar-fill" style="width:${percentile(result.combinedAvoid)}%"></div></div></div><div class="report-summary">${highlights.map(item=>`<article class="summary-card"><b>${item[0]}</b><p>${item[1]}</p></article>`).join("")}</div></div></section>
-        <section class="report-screen" id="r2"><div style="width:100%"><div class="metric-hero"><h2>${mode === "other" ? "TA 的四维分布" : "你的四维分布"}</h2><p class="metric-intro">${dimensionIntro()}</p></div><p style="max-width:760px;margin:0 auto 26px;text-align:center;color:rgba(242,237,227,.74)">${reportMetricsSummary()}</p><div class="radar-panel">${radarSvg(result.radar, 500)}</div><div class="metric-bars">${result.radar.map(m=>`<div class="metric"><div class="metric-head"><span>${m.label}</span><b>${m.value}%</b></div><div class="bar-track"><div class="bar-fill" style="width:${m.value}%"></div></div><small>${m.value>=70?`${m.label}这一维度很突出，通常会在关键关系里反复出现，建议优先看它怎么影响你的沟通和边界。`:m.value>=45?`${m.label}有一定存在感，平时可能不明显，但在压力、失望或不确定感上来时会冒出来。`:`${m.label}相对温和，目前不是最主要的压力源，可以把它当成你已有的稳定资源。`}</small></div>`).join("")}</div></div></section>
+        <section class="report-screen" id="r2"><div style="width:100%"><div class="metric-hero"><h2>${mode === "other" ? "TA 的四维分布" : "你的四维分布"}</h2><p class="metric-intro">${dimensionIntro()}</p></div><p style="max-width:760px;margin:0 auto 26px;text-align:center;color:rgba(242,237,227,.74)">${reportMetricsSummary()}</p><div class="radar-panel">${radarSvg(result.radar, radarSize)}</div><div class="metric-bars">${result.radar.map(m=>`<div class="metric"><div class="metric-head"><span>${m.label}</span><b>${m.value}%</b></div><div class="bar-track"><div class="bar-fill" style="width:${m.value}%"></div></div><small>${m.value>=70?`${m.label}这一维度很突出，通常会在关键关系里反复出现，建议优先看它怎么影响你的沟通和边界。`:m.value>=45?`${m.label}有一定存在感，平时可能不明显，但在压力、失望或不确定感上来时会冒出来。`:`${m.label}相对温和，目前不是最主要的压力源，可以把它当成你已有的稳定资源。`}</small></div>`).join("")}</div></div></section>
         <section class="report-screen" id="r3"><div class="essay ${mode === "other" ? "other" : ""}"><h2>${mode === "other" ? "解读 TA" : "关于你"}</h2><p>${mode === "other" ? `<span class="essay-lead">TA</span>从你的观察来看，更接近${label}，综合回避分处在${levelCopy[result.level]}区间。TA 的疏离未必等于不在乎，更可能是一套面对亲密压力时自动启动的保护方式。你可能经常困惑：为什么 TA 明明有靠近的瞬间，却又会突然冷下来、退回去或不愿把话说清楚。这个报告不能替 TA 下结论，但可以帮你把这些行为放进一个更清晰的关系模式里看。` : core}</p><div class="gold-line"></div><p>${mode === "other" ? "<span style='color:var(--gold)'>TA 的回避不一定是针对你。</span>很多时候，越靠近越想撤退，是因为亲密本身会让 TA 感到失控。你能做的是看见模式，而不是把所有责任都揽到自己身上。" : "<span style='color:var(--gold)'>你的回避并不一定来自冷漠。</span>很多时候，它来自太在意之后形成的谨慎：在真正交出自己之前，你需要确认对方是否稳定、是否接得住你的需要。"}</p><div class="gold-line"></div><p>${mode === "other" ? "理解 TA，不等于替 TA 合理化所有伤害。相处策略的前提，是你也被尊重、被回应、被认真对待。" : "当你愿意把“我怎么了”改成“我正在保护什么”，很多关系里的反应都会变得更容易理解。"}</p></div></section>
         <section class="report-screen" id="r4"><div class="report-grid"><div class="tree-art">${treeSvg(mode, result.radar)}</div><div><h2>${mode === "other" ? "TA 为什么会这样" : "你是怎么走到这里的"}</h2><p>${mode === "other" ? "这棵树不是装饰，它把你眼里的 TA 画成四个维度：你能看见的，是枝叶和走向。" : "这棵树不是装饰，它把你在关系里的四个维度长成枝叶：枝叶是反应，根系是保护。"}</p><p style="margin-top:18px">${childhood()}</p><p style="margin-top:18px">${mode === "other" ? "请注意，这里只是一种基于观察的温和推测，不代表 TA 真实的成长经历。理解这一点，是为了减少误解，而不是给 TA 贴标签。" : "依恋理论提醒我们，早期回应会影响一个人理解亲密的方式。成年后的你仍然可以通过更稳定的关系经验、更具体的表达练习，慢慢更新这套旧规则。"}</p></div></div></section>
         <section class="report-screen" id="r5"><div style="width:min(1120px,100%);margin:0 auto"><h2>${mode === "other" ? "与 TA 相处的关键策略" : "你在关系里的样子"}</h2><div class="stage-row">${mode === "other" ? otherStrategies().map((card,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${card[0]}</h3><p>${card[1]}</p></article>`).join("") : ["暧昧期","热恋期","稳定期","冲突期","分手期"].map((name,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${name}</h3><p>${stageText[i]}</p></article>`).join("")}</div></div></section>
