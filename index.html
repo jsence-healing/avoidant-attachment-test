@@ -1449,12 +1449,18 @@
       return icons[i % icons.length];
     }
     function radarSvg(items, size = 360) {
-      const c = size/2, r = size * .29, angles = [-90,0,90,180].map(d=>d*Math.PI/180);
+      const pad = 34;
+      const c = size/2, r = (size - pad * 2) * .29, angles = [-90,0,90,180].map(d=>d*Math.PI/180);
       const pts = (scale, useValue) => angles.map((a,i)=>{
         const rr = r * (useValue ? items[i].value/100 : scale);
         return `${c+Math.cos(a)*rr},${c+Math.sin(a)*rr}`;
       }).join(" ");
-      const labels = items.map((it,i)=>`<text x="${c+Math.cos(angles[i])*(r+44)}" y="${c+Math.sin(angles[i])*(r+36)}" text-anchor="middle" dominant-baseline="middle" fill="#F2EDE3" font-size="13">${it.label}</text>`).join("");
+      const labels = items.map((it,i)=>{
+        const x = c + Math.cos(angles[i]) * (r + 28);
+        const y = c + Math.sin(angles[i]) * (r + 24);
+        const anchor = i === 1 ? "start" : i === 3 ? "end" : "middle";
+        return `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle" fill="#F2EDE3" font-size="13">${it.label}</text>`;
+      }).join("");
       return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${[1,.66,.33].map(s=>`<polygon points="${pts(s,false)}" fill="none" stroke="rgba(242,237,227,.14)"/>`).join("")}${angles.map(a=>`<line x1="${c}" y1="${c}" x2="${c+Math.cos(a)*r}" y2="${c+Math.sin(a)*r}" stroke="rgba(242,237,227,.12)"/>`).join("")}<polygon points="${pts(1,true)}" fill="rgba(212,201,184,.30)" stroke="#C9A96E" stroke-width="2.5"/>${labels}</svg>`;
     }
     function renderQuestion() {
@@ -1770,12 +1776,6 @@
     document.querySelectorAll(".screen").forEach(s => {
       if (!s.classList.contains("active")) s.hidden = true;
     });
-    window.addEventListener("wheel", event => {
-      if (!$("reportScreen").classList.contains("active")) event.preventDefault();
-    }, { passive: false });
-    window.addEventListener("touchmove", event => {
-      if (!$("reportScreen").classList.contains("active")) event.preventDefault();
-    }, { passive: false });
     setIntro(0);
     document.querySelectorAll("[data-next-intro]").forEach(b => b.onclick = () => setIntro(introIndex + 1));
     document.querySelectorAll("[data-prev-intro]").forEach(b => b.onclick = () => setIntro(introIndex - 1));
