@@ -119,6 +119,8 @@
     }
     .kicker { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 18px; }
     .intro h1 { font-size: clamp(42px, 8vw, 78px); letter-spacing: .03em; }
+    .intro h1 .keep-line { white-space: nowrap; }
+    .intro h1 .break-before { display: inline; }
     .intro h2 { font-size: clamp(34px, 6vw, 56px); letter-spacing: .03em; }
     .intro p { max-width: 650px; margin-top: 18px; color: rgba(242, 237, 227, .78); font-size: 17px; }
     .intro-slide.light p { color: var(--muted); }
@@ -332,7 +334,7 @@
     .quiz {
       background: var(--mist);
       height: 100dvh;
-      padding: 26px 18px;
+      padding: 26px 18px 128px;
       display: grid;
       place-items: center;
     }
@@ -442,8 +444,11 @@
     }
     .q-nav button { min-height: 44px; }
     .quiz-rights {
-      width: min(100%, 760px);
-      margin-top: 24px;
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      width: min(calc(100% - 36px), 760px);
       padding: 12px 14px;
       border: 1px solid rgba(201, 169, 110, .34);
       border-radius: 10px;
@@ -454,6 +459,7 @@
       line-height: 1.65;
       font-weight: 700;
       letter-spacing: .03em;
+      z-index: 18;
     }
 
     .pause, .loader {
@@ -923,6 +929,7 @@
         padding-bottom: 84px;
       }
       .intro h1 { font-size: 42px; }
+      .intro h1 .break-before { display: block; }
       .intro h2 { font-size: 34px; }
       .intro p { font-size: 15px; line-height: 1.62; margin-top: 12px; }
       .intro-actions { margin-top: 22px; }
@@ -946,7 +953,7 @@
         place-items: start center;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 18px 12px 28px;
+        padding: 18px 12px 156px;
       }
       .question-card {
         height: auto;
@@ -990,7 +997,10 @@
         min-width: 0;
       }
       .quiz-rights {
-        margin-top: 24px;
+        left: 50%;
+        bottom: 18px;
+        width: min(calc(100% - 24px), 760px);
+        transform: translateX(-50%);
         padding: 10px 12px;
         font-size: 11px;
         line-height: 1.55;
@@ -1054,7 +1064,7 @@
       .q-title { font-size: 25px; margin-bottom: 18px; }
       .option { min-height: 50px; }
       .quiz-rights {
-        margin-top: auto;
+        bottom: 14px;
         padding: 9px 10px;
         font-size: 11px;
         line-height: 1.55;
@@ -1075,7 +1085,7 @@
       <div class="intro-slide">
         <div>
           <div class="kicker">01 · 关系里的靠近与退后</div>
-          <h1>靠近，还是逃离？</h1>
+          <h1><span class="break-before">靠近，还是</span><span class="keep-line">逃离？</span></h1>
           <p>你在亲密关系里的真实模式，往往不是你以为的那样。我们从“你如何靠近”和“你如何保护自己”开始。</p>
           <div class="intro-actions">
             <button class="btn" data-next-intro>继续</button>
