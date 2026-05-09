@@ -346,13 +346,18 @@
     .progress span { display: block; height: 100%; width: 0; background: var(--gold); transition: width .4s ease; }
     .quiz {
       background: var(--mist);
-      height: 100dvh;
+      position: absolute;
+      inset: 0;
+      min-height: 100%;
       padding:
         max(18px, env(safe-area-inset-top))
         18px
         calc(28px + env(safe-area-inset-bottom));
       overflow-y: auto;
+      overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
       display: block;
     }
     .quiz-shell {
@@ -361,6 +366,7 @@
       display: flex;
       flex-direction: column;
       gap: clamp(18px, 2.6vh, 26px);
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
     .quiz-body {
       display: block;
@@ -374,7 +380,7 @@
       border-radius: 28px;
       background: var(--paper);
       border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+      box-shadow: none;
       display: flex;
       flex-direction: column;
     }
@@ -990,6 +996,7 @@
         bottom: 14px;
       }
       .quiz {
+        min-height: 100%;
         padding:
           max(14px, env(safe-area-inset-top))
           12px
