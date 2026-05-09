@@ -89,24 +89,37 @@
       color: var(--ivory);
     }
     .intro-track {
-      height: 100dvh;
+      height: 100%;
     }
     .intro-slide {
       display: none;
       width: 100%;
+      min-height: 100dvh;
       height: 100dvh;
-      padding: 38px clamp(22px, 6vw, 76px);
+      padding:
+        max(28px, env(safe-area-inset-top))
+        clamp(22px, 6vw, 76px)
+        calc(92px + env(safe-area-inset-bottom));
       grid-template-columns: minmax(0, 1fr) minmax(290px, 520px);
       align-items: center;
       gap: 46px;
       animation: rise .34s ease both;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .intro-slide > div:first-child {
       position: relative;
       z-index: 3;
+      width: 100%;
     }
     .intro-slide.active { display: grid; }
     .intro-slide.light { background: var(--mist); color: var(--text); }
+    .intro-slide.light > div:first-child {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: min(540px, calc(100dvh - 220px));
+    }
     .intro-slide.center-only {
       grid-template-columns: minmax(0, 760px);
       justify-content: center;
@@ -334,13 +347,32 @@
     .quiz {
       background: var(--mist);
       height: 100dvh;
-      padding: 26px 18px 128px;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        18px
+        calc(18px + env(safe-area-inset-bottom));
+      display: block;
+    }
+    .quiz-shell {
+      width: min(100%, 920px);
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: clamp(14px, 2vh, 22px);
+      min-height: 0;
+    }
+    .quiz-body {
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       display: grid;
       place-items: center;
+      padding: 2px 0;
     }
     .question-card {
       width: min(100%, 760px);
-      height: min(820px, calc(100dvh - 52px));
+      min-height: min(760px, 100%);
       padding: clamp(24px, 5vw, 46px);
       border-radius: 28px;
       background: var(--paper);
@@ -444,11 +476,8 @@
     }
     .q-nav button { min-height: 44px; }
     .quiz-rights {
-      position: fixed;
-      left: 50%;
-      bottom: 24px;
-      transform: translateX(-50%);
-      width: min(calc(100% - 36px), 760px);
+      width: min(100%, 760px);
+      margin: 0 auto;
       padding: 12px 14px;
       border: 1px solid rgba(201, 169, 110, .34);
       border-radius: 10px;
@@ -459,7 +488,6 @@
       line-height: 1.65;
       font-weight: 700;
       letter-spacing: .03em;
-      z-index: 18;
     }
 
     .pause, .loader {
@@ -920,29 +948,20 @@
 
     @media (max-width: 760px) {
       .intro-slide, .report-grid { grid-template-columns: 1fr; }
-      .intro-track {
-        height: 100dvh;
-        overflow: hidden;
-      }
       .intro-slide {
-        min-height: 100dvh;
-        height: 100dvh;
+        min-height: 100%;
+        height: 100%;
         padding:
           max(20px, env(safe-area-inset-top))
           18px
-          calc(112px + env(safe-area-inset-bottom));
+          calc(88px + env(safe-area-inset-bottom));
         align-content: start;
         gap: 14px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        scroll-padding-bottom: 108px;
-      }
-      .intro-slide > div:first-child {
-        width: 100%;
+        scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom));
       }
       .intro-slide.center-only {
         padding-top: 28px;
-        padding-bottom: calc(120px + env(safe-area-inset-bottom));
+        padding-bottom: calc(96px + env(safe-area-inset-bottom));
       }
       .intro h1 { font-size: 42px; }
       .intro h1 .break-before { display: block; }
@@ -974,13 +993,14 @@
         bottom: 14px;
       }
       .quiz {
-        place-items: start center;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: 18px 12px 156px;
+        padding:
+          max(14px, env(safe-area-inset-top))
+          12px
+          calc(14px + env(safe-area-inset-bottom));
       }
+      .quiz-shell { gap: 12px; }
+      .quiz-body { place-items: start center; }
       .question-card {
-        height: auto;
         min-height: auto;
         padding: 20px 16px 18px;
         border-radius: 24px;
@@ -1021,10 +1041,6 @@
         min-width: 0;
       }
       .quiz-rights {
-        left: 50%;
-        bottom: 18px;
-        width: min(calc(100% - 24px), 760px);
-        transform: translateX(-50%);
         padding: 10px 12px;
         font-size: 11px;
         line-height: 1.55;
@@ -1082,9 +1098,6 @@
     }
 
     @media (max-width: 420px) {
-      .quiz {
-        padding-bottom: calc(184px + env(safe-area-inset-bottom));
-      }
       .question-card {
         padding: 18px 14px 22px;
       }
@@ -1104,10 +1117,8 @@
       }
       .q-nav {
         margin-top: 14px;
-        margin-bottom: 18px;
       }
       .quiz-rights {
-        bottom: calc(12px + env(safe-area-inset-bottom));
         padding: 8px 10px;
         font-size: 10px;
         line-height: 1.48;
@@ -1135,10 +1146,13 @@
     @media (max-height: 760px) {
       .source-card { display: none; }
       .beam-art { min-height: 210px; }
-      .intro-slide.light { grid-template-columns: minmax(0, 720px); justify-content: center; }
+      .intro-slide.light {
+        grid-template-columns: minmax(0, 720px);
+        justify-content: center;
+      }
       .intro-slide {
         padding-top: max(16px, env(safe-area-inset-top));
-        padding-bottom: calc(104px + env(safe-area-inset-bottom));
+        padding-bottom: calc(88px + env(safe-area-inset-bottom));
       }
       .intro-slide.light {
         align-content: center;
@@ -1166,14 +1180,10 @@
       .q-top { margin-bottom: 18px; }
       .q-title { font-size: 25px; margin-bottom: 18px; }
       .option { min-height: 50px; }
-      .quiz {
-        padding-bottom: calc(188px + env(safe-area-inset-bottom));
-      }
       .q-nav {
-        margin-bottom: 22px;
+        margin-top: 18px;
       }
       .quiz-rights {
-        bottom: 14px;
         padding: 9px 10px;
         font-size: 11px;
         line-height: 1.55;
@@ -1262,16 +1272,20 @@
   </section>
 
   <section class="screen quiz" id="quizScreen">
-    <article class="question-card">
-      <div class="q-top"><span id="sectionLabel"></span><span id="countLabel"></span></div>
-      <div class="geom" id="geomIcon"></div>
-      <div class="q-title" id="questionText"></div>
-      <div class="options" id="options"></div>
-      <div class="q-nav"><button class="btn light" id="prevBtn">← 上一题</button><button class="btn light" id="restartBtn">重来</button></div>
-    </article>
-    <div class="quiz-rights">
-      正版渠道仅限 小红书店铺「Jsence情绪治愈小屋」<br>
-      未经许可不得搬运、转售或商用；发现侵权将追究责任。
+    <div class="quiz-shell">
+      <div class="quiz-body">
+        <article class="question-card">
+          <div class="q-top"><span id="sectionLabel"></span><span id="countLabel"></span></div>
+          <div class="geom" id="geomIcon"></div>
+          <div class="q-title" id="questionText"></div>
+          <div class="options" id="options"></div>
+          <div class="q-nav"><button class="btn light" id="prevBtn">← 上一题</button><button class="btn light" id="restartBtn">重来</button></div>
+        </article>
+      </div>
+      <div class="quiz-rights">
+        正版渠道仅限 小红书店铺「Jsence情绪治愈小屋」<br>
+        未经许可不得搬运、转售或商用；发现侵权将追究责任。
+      </div>
     </div>
   </section>
 
