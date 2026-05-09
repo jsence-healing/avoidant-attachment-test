@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>回避型依恋倾向自测 V2</title>
+  <title>回避型依恋倾向自测工具</title>
   <style>
     :root {
       --ink: #1A1F2E;
@@ -569,6 +569,36 @@
       text-align: center;
       place-items: center;
     }
+    .hero-card {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 34px);
+      border-radius: 30px;
+      border: 1px solid rgba(201,169,110,.2);
+      background: linear-gradient(165deg, rgba(37,43,59,.96), rgba(24,29,42,.96));
+      box-shadow: 0 24px 80px rgba(0,0,0,.22);
+    }
+    .hero-type {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .type-icon {
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      border: 1px solid rgba(201,169,110,.28);
+      background: linear-gradient(180deg, rgba(242,237,227,.08), rgba(242,237,227,.03));
+      color: var(--gold);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .type-icon svg {
+      width: 42px;
+      height: 42px;
+    }
     .report-hero .score-bar {
       margin-left: auto;
       margin-right: auto;
@@ -641,6 +671,44 @@
       display: grid;
       gap: 14px;
       text-align: left;
+    }
+    .type-caption {
+      max-width: 560px;
+      margin: 0 auto;
+      color: rgba(242,237,227,.88);
+      line-height: 1.85;
+    }
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(201,169,110,.26);
+      background: rgba(242,237,227,.06);
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    .result-meta {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      text-align: left;
+    }
+    .result-meta div {
+      border: 1px solid rgba(242,237,227,.1);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(242,237,227,.04);
+      color: rgba(242,237,227,.8);
+      line-height: 1.8;
+    }
+    .result-meta b {
+      color: var(--gold);
+      margin-right: 8px;
     }
     .summary-card {
       border: 1px solid rgba(201,169,110,.22);
@@ -1297,6 +1365,12 @@
         ["你已经拥有的资源", `${low.label}相对较低，说明这一面目前不是你的主要压力源。它也是你的可用资源，提醒你并不是所有亲密都危险，你已经有一部分能力可以支撑改变。`]
       ];
     }
+    function typeLevelExplain(reportTitleText) {
+      if (mode === "other") {
+        return `这里有两个结果要分开看：<span style="color:var(--gold)">${reportTitleText}</span>说的是 TA 更接近哪一种关系模式；<span style="color:var(--gold)">${levelCopy[result.level]}</span>说的是 TA 的回避倾向有多明显。类型看“像哪一类”，程度看“有多强”，它们不是一回事。`;
+      }
+      return `这里有两个结果要分开看：<span style="color:var(--gold)">${reportTitleText}</span>说的是你的依恋模式更接近哪一类；<span style="color:var(--gold)">${levelCopy[result.level]}</span>说的是你的回避倾向有多明显。类型看“属于哪种模式”，程度看“强弱到什么程度”，它们不是一回事。`;
+    }
     function typeExplain() {
       const map = mode === "other"
         ? {
@@ -1378,6 +1452,14 @@
         ["保护好你自己", "理解 TA 之前，先确认你是否被尊重。你可以给空间，但不必无限等待；你可以温柔，但不能牺牲自己的底线。"]
       ];
     }
+    function typeIconSvg(type) {
+      return {
+        secure: '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14" fill="currentColor"/></svg>',
+        preoccupied: '<svg viewBox="0 0 48 48"><path d="M24 38s-10-6.4-10-16a6 6 0 0 1 10-4.4A6 6 0 0 1 34 22c0 9.6-10 16-10 16Z" fill="currentColor"/><circle cx="24" cy="29.5" r="2.1" fill="rgba(26,31,46,.9)"/><rect x="22.7" y="17.5" width="2.6" height="8.5" rx="1.3" fill="rgba(26,31,46,.9)"/></svg>',
+        dismissive: '<svg viewBox="0 0 48 48"><path d="M12 24c0-6.6 5.4-12 12-12v24c-6.6 0-12-5.4-12-12ZM36 24c0 6.6-5.4 12-12 12V12c6.6 0 12 5.4 12 12Z" fill="currentColor"/><rect x="23" y="10" width="2" height="28" fill="rgba(26,31,46,.22)"/></svg>',
+        fearful: '<svg viewBox="0 0 48 48"><path d="M24 8l12 5v8c0 8-4.8 14-12 19-7.2-5-12-11-12-19v-8l12-5Z" fill="currentColor"/></svg>'
+      }[type];
+    }
     function reportMetricsSummary() {
       const high = strongestRadar(result.radar);
       const medium = [...result.radar].sort((a, b) => b.value - a.value)[1];
@@ -1385,6 +1467,21 @@
         return `目前最值得优先观察的是 ${high.label}（${high.value}%），其次是 ${medium.label}（${medium.value}%）。如果你总觉得 TA “有时很近，有时又突然退开”，大概率不是你多想，而是这两个维度正在影响你们的相处体验。`;
       }
       return `目前最值得优先觉察的是 ${high.label}（${high.value}%），其次是 ${medium.label}（${medium.value}%）。这通常意味着，你在关系里最卡的地方并不是爱得不够，而是某种保护反应先于表达发生了。`;
+    }
+    function avoidantResultLine() {
+      if (mode === "other") {
+        if (result.combinedAvoid >= 60) return "TA 有比较明显的回避倾向";
+        if (result.combinedAvoid >= 40) return "TA 有一定回避倾向";
+        return "TA 暂时不属于明显回避倾向";
+      }
+      if (result.combinedAvoid >= 60) return "你有比较明显的回避倾向";
+      if (result.combinedAvoid >= 40) return "你有一定回避倾向";
+      return "你暂时不属于明显回避倾向";
+    }
+    function typeExplainShort(label) {
+      return mode === "other"
+        ? `依恋类型更接近：${label}`
+        : `依恋类型更接近：${label}`;
     }
     function dimensionIntro() {
       return mode === "other"
@@ -1436,12 +1533,12 @@
       reportIndex = 0;
       $("reportContent").className = "report-deck";
       $("reportContent").innerHTML = `
-        <section class="report-screen report-hero" id="r1"><div><div class="profile-tags" style="justify-content:center"><span>${tags}</span><span>${levelCopy[result.level]}</span></div><div class="type-word">${reportTitle}</div><p>${reportLine}</p><p style="margin-top:14px">${typeExplain()}</p><p style="margin-top:14px;color:rgba(242,237,227,.9)">${typeAdvice()}</p><p style="margin-top:10px;color:rgba(242,237,227,.52);font-size:13px">${mode === "other" ? "基于你提供的观察信息推断，仅供参考" : ""}</p><div class="score-bar"><p>${mode === "other" ? "TA 的回避倾向" : "综合回避分"}高于 ${percentile(result.combinedAvoid)}% 的参考用户</p><div class="bar-track"><div class="bar-fill" style="width:${percentile(result.combinedAvoid)}%"></div></div></div><div class="report-summary">${highlights.map(item=>`<article class="summary-card"><b>${item[0]}</b><p>${item[1]}</p></article>`).join("")}</div></div></section>
+        <section class="report-screen report-hero" id="r1"><div class="hero-card"><div class="profile-tags" style="justify-content:center"><span>${tags}</span><span>${levelCopy[result.level]}</span></div><div class="hero-type"><div class="type-icon" aria-hidden="true">${typeIconSvg(result.attachmentType)}</div><div class="result-badge">${avoidantResultLine()}</div><div class="type-word">${reportTitle}</div><p class="type-caption">${reportLine}</p></div><div class="result-meta"><div><b>先看结论</b>${avoidantResultLine()}，这是这份工具最核心的判断。</div><div><b>再看类型</b>${typeExplainShort(reportTitle)}，它是在解释这种回避更像哪一种关系模式。</div><div><b>最后看程度</b>${levelCopy[result.level]}，说的是这种回避倾向目前有多明显。</div></div><p style="margin-top:14px">${typeAdvice()}</p><p style="margin-top:10px;color:rgba(242,237,227,.52);font-size:13px">${mode === "other" ? "基于你提供的观察信息推断，仅供参考" : ""}</p><div class="score-bar"><p>${mode === "other" ? "TA 的回避倾向" : "综合回避分"}高于 ${percentile(result.combinedAvoid)}% 的参考用户</p><div class="bar-track"><div class="bar-fill" style="width:${percentile(result.combinedAvoid)}%"></div></div></div><div class="report-summary">${highlights.map(item=>`<article class="summary-card"><b>${item[0]}</b><p>${item[1]}</p></article>`).join("")}</div></div></section>
         <section class="report-screen" id="r2"><div style="width:100%"><div class="metric-hero"><h2>${mode === "other" ? "TA 的四维分布" : "你的四维分布"}</h2><p class="metric-intro">${dimensionIntro()}</p></div><p style="max-width:760px;margin:0 auto 26px;text-align:center;color:rgba(242,237,227,.74)">${reportMetricsSummary()}</p><div class="radar-panel">${radarSvg(result.radar, 500)}</div><div class="metric-bars">${result.radar.map(m=>`<div class="metric"><div class="metric-head"><span>${m.label}</span><b>${m.value}%</b></div><div class="bar-track"><div class="bar-fill" style="width:${m.value}%"></div></div><small>${m.value>=70?`${m.label}这一维度很突出，通常会在关键关系里反复出现，建议优先看它怎么影响你的沟通和边界。`:m.value>=45?`${m.label}有一定存在感，平时可能不明显，但在压力、失望或不确定感上来时会冒出来。`:`${m.label}相对温和，目前不是最主要的压力源，可以把它当成你已有的稳定资源。`}</small></div>`).join("")}</div></div></section>
         <section class="report-screen" id="r3"><div class="essay ${mode === "other" ? "other" : ""}"><h2>${mode === "other" ? "解读 TA" : "关于你"}</h2><p>${mode === "other" ? `<span class="essay-lead">TA</span>从你的观察来看，更接近${label}，综合回避分处在${levelCopy[result.level]}区间。TA 的疏离未必等于不在乎，更可能是一套面对亲密压力时自动启动的保护方式。你可能经常困惑：为什么 TA 明明有靠近的瞬间，却又会突然冷下来、退回去或不愿把话说清楚。这个报告不能替 TA 下结论，但可以帮你把这些行为放进一个更清晰的关系模式里看。` : core}</p><div class="gold-line"></div><p>${mode === "other" ? "<span style='color:var(--gold)'>TA 的回避不一定是针对你。</span>很多时候，越靠近越想撤退，是因为亲密本身会让 TA 感到失控。你能做的是看见模式，而不是把所有责任都揽到自己身上。" : "<span style='color:var(--gold)'>你的回避并不一定来自冷漠。</span>很多时候，它来自太在意之后形成的谨慎：在真正交出自己之前，你需要确认对方是否稳定、是否接得住你的需要。"}</p><div class="gold-line"></div><p>${mode === "other" ? "理解 TA，不等于替 TA 合理化所有伤害。相处策略的前提，是你也被尊重、被回应、被认真对待。" : "当你愿意把“我怎么了”改成“我正在保护什么”，很多关系里的反应都会变得更容易理解。"}</p></div></section>
         <section class="report-screen" id="r4"><div class="report-grid"><div class="tree-art">${treeSvg(mode, result.radar)}</div><div><h2>${mode === "other" ? "TA 为什么会这样" : "你是怎么走到这里的"}</h2><p>${mode === "other" ? "这棵树不是装饰，它把你眼里的 TA 画成四个维度：你能看见的，是枝叶和走向。" : "这棵树不是装饰，它把你在关系里的四个维度长成枝叶：枝叶是反应，根系是保护。"}</p><p style="margin-top:18px">${childhood()}</p><p style="margin-top:18px">${mode === "other" ? "请注意，这里只是一种基于观察的温和推测，不代表 TA 真实的成长经历。理解这一点，是为了减少误解，而不是给 TA 贴标签。" : "依恋理论提醒我们，早期回应会影响一个人理解亲密的方式。成年后的你仍然可以通过更稳定的关系经验、更具体的表达练习，慢慢更新这套旧规则。"}</p></div></div></section>
         <section class="report-screen" id="r5"><div style="width:min(1120px,100%);margin:0 auto"><h2>${mode === "other" ? "与 TA 相处的关键策略" : "你在关系里的样子"}</h2><div class="stage-row">${mode === "other" ? otherStrategies().map((card,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${card[0]}</h3><p>${card[1]}</p></article>`).join("") : ["暧昧期","热恋期","稳定期","冲突期","分手期"].map((name,i)=>`<article class="stage-card"><div class="stage-icon">${iconSvg(i)}</div><h3>${name}</h3><p>${stageText[i]}</p></article>`).join("")}</div></div></section>
-        <section class="report-screen" id="r6"><div class="report-grid"><div class="letter-card"><h3>${mode === "other" ? "给你的话" : "给重要他人的一封信"}</h3><p>${mode === "other" ? "在你想理解 TA 之前，请先记住：你不是 TA 的治疗师，也不需要负责改变 TA。改变一个成年人是很困难的事，你能做的是看清 TA 是谁，看清自己想要什么，然后决定要不要继续、怎么继续。" : result.attachmentType==="dismissive"?"我的安静不是冷漠，我的距离也不一定是不在意。很多时候，我只是还不熟悉怎样安全地表达需要。请给我一点节奏，也请在靠近我时保持清晰和温柔。":result.attachmentType==="fearful"?"我可能一边期待你靠近，一边又在靠近发生时紧张。那不是你做错了，也不是我不珍惜你。稳定的陪伴、明确的边界和不急着逼我表态，会让我更容易留下来。":result.attachmentType==="preoccupied"?"我的反复确认并不是想控制你，而是有时我会很快掉进不安里。清晰、稳定的回应会让我慢慢放松。":"我珍惜亲密，也珍惜彼此作为独立个体的空间。我们不必用猜测来证明爱，稳定、回应和尊重本身就足够珍贵。"}</p><div class="signature">—— ${mode === "other" ? "先保护好你自己" : "你的另一半"}</div></div><div><h2>下一步</h2><div class="advice">${mode === "other" ? "<div>觉察：记录 TA 的行为模式 1 周，看行动是否稳定，而不是只看一句话。</div><div>沟通：用“我感受到……”代替“你为什么……”，尝试一次清晰而不逼迫的对话。</div><div>底线：写下 3 条自己绝不接受的行为。若出现长期贬低、情感操纵、冷暴力或安全风险，请优先考虑离开。</div>" : "<div>觉察：下次想说“我没事”之前，先停 3 秒，问自己真正的感受是什么。</div><div>行动：每周选择一次低风险表达，只说一个具体需要。</div><div>帮助：若长期感到关系困扰、情绪低落超过两周，或出现自我伤害念头，请及时联系国家心理援助热线 12356，或寻找当地注册心理咨询师。</div>"}</div><div class="guide-preview"><div class="guide-content"><h3>后续指南</h3><div class="guide-detail">${mode === "other" ? "<div>我们会用另一种方式提供，重点会放在识别真假靠近、沟通节奏、边界与底线、关系预警信号，以及你怎么更好地保护自己等方向。如果你对这部分有需要，可以联系店铺获取后续内容。</div>" : "<div>我们会用另一种方式提供，重点会放在情绪识别、低风险表达、建立安全感、冲突中的稳定处理，以及关系里的长期练习等方向。如果你对这部分有需要，可以联系店铺获取后续内容。</div>"}</div></div><div class="report-actions"><button class="btn" type="button" onclick="toggleGuidePreview(this)">查看后续指南</button><button class="btn ghost" type="button" onclick="backToModeSelect()">重新评估</button></div></div><div class="notice"><strong>重要说明</strong><br>${IMPORTANT_NOTICE}</div></div></div></section>`;
+        <section class="report-screen" id="r6"><div class="report-grid"><div class="letter-card"><h3>${mode === "other" ? "给你的话" : "给重要他人的一封信"}</h3><p>${mode === "other" ? "在你想理解 TA 之前，请先记住：你不是 TA 的治疗师，也不需要负责改变 TA。改变一个成年人是很困难的事，你能做的是看清 TA 是谁，看清自己想要什么，然后决定要不要继续、怎么继续。" : result.attachmentType==="dismissive"?"我的安静不是冷漠，我的距离也不一定是不在意。很多时候，我只是还不熟悉怎样安全地表达需要。请给我一点节奏，也请在靠近我时保持清晰和温柔。":result.attachmentType==="fearful"?"我可能一边期待你靠近，一边又在靠近发生时紧张。那不是你做错了，也不是我不珍惜你。稳定的陪伴、明确的边界和不急着逼我表态，会让我更容易留下来。":result.attachmentType==="preoccupied"?"我的反复确认并不是想控制你，而是有时我会很快掉进不安里。清晰、稳定的回应会让我慢慢放松。":"我珍惜亲密，也珍惜彼此作为独立个体的空间。我们不必用猜测来证明爱，稳定、回应和尊重本身就足够珍贵。"}</p><div class="signature">—— ${mode === "other" ? "先保护好你自己" : "你的另一半"}</div></div><div><h2>下一步</h2><div class="advice">${mode === "other" ? "<div>觉察：记录 TA 的行为模式 1 周，看行动是否稳定，而不是只看一句话。</div><div>沟通：用“我感受到……”代替“你为什么……”，尝试一次清晰而不逼迫的对话。</div><div>底线：写下 3 条自己绝不接受的行为。若出现长期贬低、情感操纵、冷暴力或安全风险，请优先考虑离开。</div>" : "<div>觉察：下次想说“我没事”之前，先停 3 秒，问自己真正的感受是什么。</div><div>行动：每周选择一次低风险表达，只说一个具体需要。</div><div>帮助：若长期感到关系困扰、情绪低落超过两周，或出现自我伤害念头，请及时联系国家心理援助热线 12356，或寻找当地注册心理咨询师。</div>"}</div><div class="guide-preview"><div class="guide-content"><h3>后续指南</h3><div class="guide-detail">${mode === "other" ? "<div>我们会用另一种方式提供，重点会放在识别真假靠近、沟通节奏、边界与底线、关系预警信号，以及你怎么更好地保护自己等方向。如果你对这部分有需要，可以联系小红书店铺「Jsence情绪治愈小屋」获取后续内容。</div>" : "<div>我们会用另一种方式提供，重点会放在情绪识别、低风险表达、建立安全感、冲突中的稳定处理，以及关系里的长期练习等方向。如果你对这部分有需要，可以联系小红书店铺「Jsence情绪治愈小屋」获取后续内容。</div>"}</div></div><div class="report-actions"><button class="btn" type="button" onclick="toggleGuidePreview(this)">查看后续指南</button><button class="btn ghost" type="button" onclick="backToModeSelect()">重新评估</button></div></div><div class="notice"><strong>重要说明</strong><br>${IMPORTANT_NOTICE}</div></div></div></section>`;
       $("reportNav").innerHTML = "";
       show("reportScreen");
     }
