@@ -421,12 +421,19 @@
       border: 1.5px solid var(--taupe);
       box-shadow: inset 0 0 0 5px #fff;
     }
-    .option:hover, .option.selected {
+    .option.selected {
       border-color: var(--gold);
       background: #FCF7ED;
       transform: scale(.992);
     }
     .option.selected::before { background: var(--gold); border-color: var(--gold); }
+    @media (hover: hover) and (pointer: fine) {
+      .option:hover {
+        border-color: var(--gold);
+        background: #FCF7ED;
+        transform: scale(.992);
+      }
+    }
     .q-nav {
       margin-top: 24px;
       display: flex;
@@ -435,6 +442,7 @@
     }
     .q-nav button { min-height: 44px; }
     .quiz-rights {
+      width: min(100%, 760px);
       margin-top: auto;
       padding: 12px 14px;
       border: 1px solid rgba(201, 169, 110, .34);
@@ -932,13 +940,17 @@
         height: 22px;
       }
       .source-item p { margin-top: 4px; font-size: 13px; line-height: 1.45; }
-      .question-card {
-        height: min(860px, calc(100dvh - 24px));
-        max-height: calc(100dvh - 24px);
-        padding: 20px 16px 18px;
-        border-radius: 24px;
+      .quiz {
+        place-items: start center;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        padding: 18px 12px 28px;
+      }
+      .question-card {
+        height: auto;
+        min-height: auto;
+        padding: 20px 16px 18px;
+        border-radius: 24px;
       }
       .q-top { margin-bottom: 28px; }
       .q-top {
@@ -976,7 +988,7 @@
         min-width: 0;
       }
       .quiz-rights {
-        margin-top: 18px;
+        margin-top: 14px;
         padding: 10px 12px;
         font-size: 11px;
         line-height: 1.55;
@@ -1124,11 +1136,11 @@
       <div class="q-title" id="questionText"></div>
       <div class="options" id="options"></div>
       <div class="q-nav"><button class="btn light" id="prevBtn">← 上一题</button><button class="btn light" id="restartBtn">重来</button></div>
-      <div class="quiz-rights">
-        正版渠道仅限 小红书店铺「Jsence情绪治愈小屋」<br>
-        未经许可不得搬运、转售或商用；发现侵权将追究责任。
-      </div>
     </article>
+    <div class="quiz-rights">
+      正版渠道仅限 小红书店铺「Jsence情绪治愈小屋」<br>
+      未经许可不得搬运、转售或商用；发现侵权将追究责任。
+    </div>
   </section>
 
   <section class="screen pause" id="pauseScreen">
