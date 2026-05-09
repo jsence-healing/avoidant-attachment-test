@@ -920,13 +920,21 @@
 
     @media (max-width: 760px) {
       .intro-slide, .report-grid { grid-template-columns: 1fr; }
-      .intro-slide { padding: 24px 18px 74px; align-content: center; gap: 16px; overflow: hidden; }
-      .intro-slide.center-only {
+      .intro-track {
+        height: 100dvh;
+        overflow: hidden;
+      }
+      .intro-slide {
+        padding: 24px 18px 132px;
         align-content: start;
+        gap: 16px;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        scroll-padding-bottom: 108px;
+      }
+      .intro-slide.center-only {
         padding-top: 28px;
-        padding-bottom: 84px;
+        padding-bottom: 132px;
       }
       .intro h1 { font-size: 42px; }
       .intro h1 .break-before { display: block; }
@@ -949,6 +957,9 @@
         height: 22px;
       }
       .source-item p { margin-top: 4px; font-size: 13px; line-height: 1.45; }
+      .dots {
+        bottom: 14px;
+      }
       .quiz {
         place-items: start center;
         overflow-y: auto;
@@ -1039,11 +1050,12 @@
       .report-controls .btn { width: auto; }
       .type-word { font-size: 48px; }
       .letter-card { border-radius: 24px; }
-      .mode-grid { grid-template-columns: 1fr; gap: 12px; }
-      .mode-card { min-height: 210px; padding: 20px 18px 18px; }
+      .mode-grid { grid-template-columns: 1fr; gap: 10px; }
+      .mode-card { min-height: 188px; padding: 18px 16px 16px; }
       .mode-icon { width: 52px; height: 52px; margin-bottom: 10px; }
-      .mode-card h3 { font-size: 30px; }
-      .mode-card p { font-size: 15px; margin-top: auto; }
+      .mode-card h3 { font-size: 28px; }
+      .mode-card p { font-size: 14px; margin-top: auto; line-height: 1.58; }
+      .mode-head { min-height: 116px; }
       .geom {
         width: 58px;
         height: 58px;
