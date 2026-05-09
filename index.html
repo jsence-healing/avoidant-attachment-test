@@ -393,6 +393,10 @@
       background: var(--gold);
     }
     .options { display: grid; gap: 12px; margin-top: 0; }
+    .options.transitioning {
+      opacity: .72;
+      pointer-events: none;
+    }
     .option {
       width: 100%;
       min-height: 58px;
@@ -928,8 +932,55 @@
         height: 22px;
       }
       .source-item p { margin-top: 4px; font-size: 13px; line-height: 1.45; }
-      .question-card { height: calc(100dvh - 72px); border-radius: 24px; }
+      .question-card {
+        height: min(860px, calc(100dvh - 24px));
+        max-height: calc(100dvh - 24px);
+        padding: 20px 16px 18px;
+        border-radius: 24px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
       .q-top { margin-bottom: 28px; }
+      .q-top {
+        gap: 10px;
+        font-size: 12px;
+      }
+      .q-title {
+        padding-left: 16px;
+        margin-bottom: 18px;
+        font-size: 24px;
+        line-height: 1.5;
+      }
+      .options { gap: 10px; }
+      .option {
+        min-height: 54px;
+        padding: 12px 14px;
+        gap: 12px;
+        grid-template-columns: 18px 1fr;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .option::before {
+        width: 16px;
+        height: 16px;
+        box-shadow: inset 0 0 0 4px #fff;
+      }
+      .q-nav {
+        margin-top: 18px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .q-nav .btn {
+        flex: 1 1 140px;
+        min-width: 0;
+      }
+      .quiz-rights {
+        margin-top: 18px;
+        padding: 10px 12px;
+        font-size: 11px;
+        line-height: 1.55;
+      }
       .report-screen { padding: 34px 18px; }
       .report-nav { display: none; }
       .report-controls { display: none !important; }
@@ -1250,6 +1301,7 @@
       $("questionText").textContent = q.text;
       $("geomIcon").innerHTML = current < basicCount ? "" : iconSvg(current);
       $("geomIcon").classList.toggle("empty", current < basicCount);
+      $("options").classList.remove("transitioning");
       $("options").innerHTML = "";
       const saved = current < basicCount ? answers.basic[q.id] : answers.responses[q.id];
       q.options.forEach((option, index) => {
@@ -1269,18 +1321,23 @@
       if (current < basicCount) answers.basic[q.id] = value; else answers.responses[q.id] = value;
       document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
       btn.classList.add("selected");
+      btn.blur();
+      $("options").classList.add("transitioning");
       setTimeout(() => {
         const answered32 = current - basicCount + 1;
         if (answered32 === 12 || answered32 === 23) {
           current++;
+          $("options").classList.remove("transitioning");
           showPause(answered32);
         } else if (current < list.length - 1) {
           current++;
+          $("options").classList.remove("transitioning");
           renderQuestion();
         } else {
+          $("options").classList.remove("transitioning");
           finish();
         }
-      }, 300);
+      }, 140);
     }
     function showPause(done) {
       pauseNext = current;
